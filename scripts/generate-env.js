@@ -1,6 +1,6 @@
-/* Generates env.json with the minimal public configuration needed by the client. */
-const { writeFileSync, mkdirSync } = require('fs');
-const { join, dirname } = require('path');
+/* Generates public assets for static hosting (env.json + index.html). */
+const { writeFileSync, mkdirSync, copyFileSync } = require('fs');
+const { join } = require('path');
 
 function getEnv(key) {
   const value = process.env[key];
@@ -17,8 +17,10 @@ const filtered = Object.fromEntries(
   Object.entries(env).filter(([_, v]) => v !== undefined)
 );
 
-const outPath = join(process.cwd(), 'env.json');
-mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, JSON.stringify(filtered, null, 2));
+const outDir = join(process.cwd(), 'public');
+mkdirSync(outDir, { recursive: true });
 
-console.log('Wrote env.json with keys:', Object.keys(filtered));
+writeFileSync(join(outDir, 'env.json'), JSON.stringify(filtered, null, 2));
+copyFileSync(join(process.cwd(), 'index.html'), join(outDir, 'index.html'));
+
+console.log('Built public/ with files:', ['index.html', 'env.json'], 'env keys:', Object.keys(filtered));
