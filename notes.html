@@ -108,7 +108,8 @@
     .editor-header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); }
     .title-input { font-size: 1.2rem; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); outline: none; width: 100%; }
 
-    .editor-toolbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 56px; z-index: 4; }
+    .editor-toolbar { display: flex; flex-wrap: nowrap; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 56px; z-index: 4; overflow-x: auto; white-space: nowrap; align-items: center; }
+    .editor-toolbar .btn { flex: 0 0 auto; }
     .editor { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 0; }
     .pane { min-height: 0; overflow: auto; }
 
@@ -162,8 +163,8 @@
       .md-pane { border-left: none; border-top: 1px solid var(--border); }
     }
     @media (max-width: 900px) {
-      .app { grid-template-columns: 1fr; grid-template-areas: "header" "main"; }
-      .sidebar { display: none; }
+      .app { grid-template-columns: 1fr; grid-template-rows: 56px auto 1fr; grid-template-areas: "header" "sidebar" "main"; }
+      .sidebar { display: block; border-right: none; border-bottom: 1px solid var(--border); position: sticky; top: 56px; height: calc(100vh - 56px); overflow: auto; }
     }
   </style>
 </head>
