@@ -2182,11 +2182,21 @@
       async loadEnv() {
         this.env = {};
         try {
-          const res = await fetch('/.env', { cache: 'no-store' });
-          if (res.ok) {
-            const text = await res.text();
-            this.env = this.parseEnv(text);
-            // Apply env to settings
+          // On Vercel/production, use API endpoint. Locally, fall back to /.env
+          let data = null;
+          try {
+            const apiRes = await fetch('/api/env', { cache: 'no-store' });
+            if (apiRes.ok) data = await apiRes.json();
+          } catch (_) {}
+          if (!data) {
+            const res = await fetch('/.env', { cache: 'no-store' });
+            if (res.ok) {
+              const text = await res.text();
+              data = this.parseEnv(text);
+            }
+          }
+          if (data) {
+            this.env = data;
             if (this.env.GITHUB_TOKEN) this.state.settings.githubToken = this.env.GITHUB_TOKEN;
             if (this.env.GIST_ID) this.state.settings.gistId = this.env.GIST_ID;
             if (this.env.GITHUB_TOKEN && this.env.GIST_ID) this.state.settings.syncEnabled = true;
