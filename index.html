@@ -68,7 +68,7 @@
 
     .app {
       display: grid;
-      grid-template-columns: var(--sidebar-width, 250px) 1fr;
+      grid-template-columns: var(--sidebar-width, 320px) 1fr;
       grid-template-rows: 60px 1fr;
       grid-template-areas:
         "sidebar header"
@@ -145,7 +145,6 @@
       flex-direction: column;
       transition: var(--transition);
       overflow: hidden;
-      width: var(--sidebar-width, 250px);
     }
 
     .app.sidebar-hidden .sidebar {
@@ -154,23 +153,23 @@
     }
 
     .sidebar-header {
-      padding: 16px;
+      padding: 20px;
       border-bottom: 1px solid var(--border);
     }
 
     .search-container {
       position: relative;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .search-input {
       width: 100%;
-      padding: 8px 12px 8px 32px;
+      padding: 12px 16px 12px 44px;
       background: var(--panel-2);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 12px;
       color: var(--text);
-      font-size: 13px;
+      font-size: 14px;
       transition: var(--transition);
     }
 
@@ -182,30 +181,29 @@
 
     .search-icon {
       position: absolute;
-      left: 12px;
+      left: 16px;
       top: 50%;
       transform: translateY(-50%);
       color: var(--muted);
-      font-size: 12px;
     }
 
     .sidebar-actions {
-      display: flex;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
     }
 
     .filter-tags {
       display: flex;
-      gap: 4px;
+      gap: 8px;
       flex-wrap: wrap;
-      padding: 8px 16px;
-      border-bottom: 1px solid var(--border);
+      padding: 16px 20px 0;
     }
 
     .filter-tag {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 11px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       transition: var(--transition);
@@ -224,59 +222,13 @@
     .note-list {
       flex: 1;
       overflow-y: auto;
-      padding: 4px 0;
-    }
-
-    .folder-item {
-      margin: 2px 8px;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: var(--transition);
-      border: 1px solid transparent;
-      background: var(--panel-2);
-      border-left: 3px solid var(--accent);
-    }
-
-    .folder-item:hover {
-      background: var(--panel-hover);
-    }
-
-    .folder-item.expanded {
-      background: var(--accent-light);
-    }
-
-    .folder-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 600;
-      font-size: 12px;
-      color: var(--text);
-    }
-
-    .folder-toggle {
-      width: 16px;
-      height: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border-radius: 3px;
-      transition: var(--transition);
-    }
-
-    .folder-notes {
-      margin-top: 4px;
-      border-left: 1px solid var(--border);
-      margin-left: 8px;
-      padding-left: 8px;
+      padding: 8px 0;
     }
 
     .note-item {
-      margin: 2px 8px;
-      padding: 8px 12px;
-      border-radius: 6px;
+      margin: 4px 12px;
+      padding: 16px;
+      border-radius: 12px;
       cursor: pointer;
       transition: var(--transition);
       border: 1px solid transparent;
@@ -297,33 +249,50 @@
       content: '';
       position: absolute;
       left: 0;
-      top: 4px;
-      bottom: 4px;
-      width: 2px;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
       background: var(--accent);
-      border-radius: 0 1px 1px 0;
+      border-radius: 0 2px 2px 0;
     }
 
     .note-title {
-      font-weight: 500;
-      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
       color: var(--text);
-      line-height: 1.3;
-      margin-bottom: 2px;
+      line-height: 1.4;
+    }
+
+    .note-preview {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
     .note-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
     }
 
-    .note-dates {
+    .note-tags {
       display: flex;
-      flex-direction: column;
-      gap: 1px;
+      gap: 4px;
+    }
+
+    .tag {
+      padding: 2px 6px;
+      background: var(--panel-2);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--muted);
     }
 
     /* Main Content */
@@ -336,7 +305,7 @@
     }
 
     .editor-header {
-      padding: 16px 20px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
       display: flex;
@@ -346,13 +315,13 @@
 
     .title-input {
       flex: 1;
-      font-size: 20px;
-      font-weight: 600;
+      font-size: 24px;
+      font-weight: 700;
       background: transparent;
       border: none;
       color: var(--text);
       outline: none;
-      padding: 6px 0;
+      padding: 8px 0;
     }
 
     .title-input::placeholder {
@@ -363,7 +332,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--muted);
     }
 
@@ -386,7 +355,7 @@
 
     /* Toolbar */
     .editor-toolbar {
-      padding: 8px 20px;
+      padding: 12px 24px;
       border-bottom: 1px solid var(--border);
       background: var(--panel);
       display: flex;
@@ -404,8 +373,8 @@
     .toolbar-group {
       display: flex;
       gap: 4px;
-      padding-right: 8px;
-      margin-right: 8px;
+      padding-right: 12px;
+      margin-right: 12px;
       border-right: 1px solid var(--border);
     }
 
@@ -419,12 +388,12 @@
     .editor-container {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr var(--md-divider-width, 1px) var(--md-editor-width, 0fr);
+      grid-template-columns: 1fr var(--divider-width, 1px) 1fr;
       min-height: 0;
       transition: var(--transition);
     }
 
-    .editor-container.md-hidden {
+    .editor-container.single-pane {
       grid-template-columns: 1fr;
     }
 
@@ -439,18 +408,18 @@
     }
 
     /* Resizer */
-    .md-resizer {
+    .resizer {
       background: var(--border);
       cursor: col-resize;
       position: relative;
       transition: var(--transition);
     }
 
-    .md-resizer:hover, .md-resizer.resizing {
+    .resizer:hover, .resizer.resizing {
       background: var(--accent);
     }
 
-    .md-resizer::before {
+    .resizer::before {
       content: '';
       position: absolute;
       left: -2px;
@@ -461,7 +430,7 @@
 
     /* WYSIWYG Editor */
     .wysiwyg-editor {
-      padding: 24px;
+      padding: 32px;
       min-height: 100%;
       outline: none;
       line-height: 1.7;
@@ -503,34 +472,39 @@
       font-size: 0.9em;
     }
 
-    /* Custom checkbox styling */
-    .wysiwyg-editor input[type="checkbox"] {
-      margin-right: 8px;
-      transform: scale(1.2);
-    }
-
-    /* Markdown Editor */
+    /* Markdown Pane */
     .markdown-pane {
       display: flex;
       flex-direction: column;
-      background: var(--panel-2);
     }
 
-    .markdown-header {
+    .markdown-tabs {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      background: var(--panel);
+      background: var(--panel-2);
       border-bottom: 1px solid var(--border);
-      font-size: 12px;
+    }
+
+    .markdown-tab {
+      padding: 12px 20px;
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
       font-weight: 500;
-      color: var(--text-secondary);
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+    }
+
+    .markdown-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--panel);
     }
 
     .markdown-editor {
       flex: 1;
-      padding: 24px;
+      padding: 32px;
       background: var(--panel-2);
       border: none;
       outline: none;
@@ -541,15 +515,23 @@
       resize: none;
     }
 
+    .markdown-preview {
+      flex: 1;
+      padding: 32px;
+      background: var(--panel);
+      overflow: auto;
+      line-height: 1.7;
+    }
+
     /* Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: var(--transition);
@@ -590,15 +572,15 @@
     }
 
     .btn.small {
-      padding: 4px 8px;
-      font-size: 11px;
+      padding: 6px 12px;
+      font-size: 12px;
     }
 
     .btn.icon {
-      width: 28px;
-      height: 28px;
+      width: 36px;
+      height: 36px;
       padding: 0;
-      border-radius: 6px;
+      border-radius: 8px;
     }
 
     .btn:disabled {
@@ -607,9 +589,81 @@
       transform: none !important;
     }
 
+    /* Attachments */
+    .attachments {
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      padding: 16px 24px;
+    }
+
+    .attachments-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .attachments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .attachment-item {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .attachment-item:hover {
+      border-color: var(--accent);
+    }
+
+    .attachment-preview {
+      height: 120px;
+      background: var(--panel-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .attachment-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: cover;
+    }
+
+    .attachment-info {
+      padding: 12px;
+    }
+
+    .attachment-name {
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+
+    .attachment-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .attachment-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
     /* Status Bar */
     .status-bar {
-      padding: 8px 20px;
+      padding: 8px 24px;
       border-top: 1px solid var(--border);
       background: var(--panel);
       display: flex;
@@ -753,6 +807,17 @@
     .text-muted { color: var(--muted); }
 
     /* Responsive Design */
+    @media (max-width: 1024px) {
+      .editor-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .markdown-pane {
+        border-top: 1px solid var(--border);
+        border-left: none;
+      }
+    }
+
     @media (max-width: 768px) {
       .app {
         grid-template-columns: 1fr;
@@ -767,7 +832,6 @@
         border-right: none;
         border-bottom: 1px solid var(--border);
         max-height: 300px;
-        width: auto !important;
       }
 
       .app.sidebar-hidden {
@@ -779,11 +843,7 @@
         border-bottom: none;
       }
 
-      .editor-container {
-        grid-template-columns: 1fr;
-      }
-
-      .markdown-pane {
+      .header-actions .btn:not(.primary) {
         display: none;
       }
     }
@@ -839,9 +899,9 @@
       
       <div class="filter-tags">
         <div class="filter-tag active" data-filter="all">All</div>
-        <div class="filter-tag" data-filter="folders">📁 Folders</div>
         <div class="filter-tag" data-filter="pinned">📌 Pinned</div>
         <div class="filter-tag" data-filter="today">📅 Today</div>
+        <div class="filter-tag" data-filter="files">📎 Files</div>
       </div>
 
       <div id="noteList" class="note-list"></div>
@@ -873,14 +933,14 @@
         <div class="toolbar-group">
           <button class="btn icon" data-cmd="insertUnorderedList" title="Bullet List">•</button>
           <button class="btn icon" data-cmd="insertOrderedList" title="Numbered List">1.</button>
-          <button id="checkboxBtn" class="btn icon" title="Checkbox">☐</button>
+          <button class="btn icon" data-cmd="indent" title="Indent">→</button>
+          <button class="btn icon" data-cmd="outdent" title="Outdent">←</button>
         </div>
         
         <div class="toolbar-group">
           <button class="btn icon" data-cmd="formatBlock" data-value="h1" title="Heading 1">H1</button>
           <button class="btn icon" data-cmd="formatBlock" data-value="h2" title="Heading 2">H2</button>
           <button class="btn icon" data-cmd="formatBlock" data-value="h3" title="Heading 3">H3</button>
-          <button class="btn icon" data-cmd="formatBlock" data-value="p" title="Paragraph">P</button>
         </div>
         
         <div class="toolbar-group">
@@ -892,30 +952,47 @@
         </div>
         
         <div class="toolbar-group">
-          <button id="toggleMdBtn" class="btn small">Show MD</button>
+          <button id="toggleViewBtn" class="btn small">Split View</button>
           <button id="focusModeBtn" class="btn small">Focus Mode</button>
           <button id="pinNoteBtn" class="btn small">📌 Pin</button>
         </div>
       </div>
 
       <!-- Editor Container -->
-      <div id="editorContainer" class="editor-container md-hidden">
+      <div id="editorContainer" class="editor-container">
         <!-- WYSIWYG Pane -->
         <div id="wysiwygPane" class="editor-pane">
           <div id="wysiwygEditor" class="wysiwyg-editor" contenteditable="true"></div>
         </div>
         
         <!-- Resizer -->
-        <div id="mdResizer" class="md-resizer"></div>
+        <div id="resizer" class="resizer"></div>
         
         <!-- Markdown Pane -->
         <div id="markdownPane" class="editor-pane markdown-pane">
-          <div class="markdown-header">
-            <span>Markdown Editor</span>
-            <button id="hideMdBtn" class="btn ghost small">✕</button>
+          <div class="markdown-tabs">
+            <button id="writeTab" class="markdown-tab active">Write</button>
+            <button id="previewTab" class="markdown-tab">Preview</button>
           </div>
           <textarea id="markdownEditor" class="markdown-editor" placeholder="Start writing in Markdown..."></textarea>
+          <div id="markdownPreview" class="markdown-preview hidden"></div>
         </div>
+      </div>
+
+      <!-- Attachments Section -->
+      <div class="attachments">
+        <div class="attachments-header">
+          <div class="flex items-center gap-2">
+            <span class="font-medium">Attachments</span>
+            <span id="attachmentCount" class="text-muted text-sm">0 files</span>
+          </div>
+          <div class="flex gap-2">
+            <input id="fileInput" type="file" multiple class="hidden" accept="image/*,application/pdf,.doc,.docx,.txt,.md" />
+            <button id="addFileBtn" class="btn small">📎 Add Files</button>
+            <button id="clearFilesBtn" class="btn small danger">🗑️ Clear All</button>
+          </div>
+        </div>
+        <div id="attachmentsGrid" class="attachments-grid"></div>
       </div>
 
       <!-- Status Bar -->
@@ -980,36 +1057,17 @@
         </div>
 
         <div class="form-field">
-          <label class="form-label">Data Management</label>
+          <label class="form-label">Editor Settings</label>
           <div class="flex gap-2">
-            <button id="clearSyncDataBtn" class="btn small danger">Clear Sync Data</button>
-            <button id="resetAppBtn" class="btn small danger">Reset App</button>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="autoSaveCheck" checked />
+              Auto-save
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="checkbox" id="spellCheckCheck" checked />
+              Spell check
+            </label>
           </div>
-          <p style="font-size: 12px; color: var(--muted); margin: 8px 0 0;">
-            Clear sync data to fix sync errors. Reset app to start fresh.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Folder Modal -->
-  <div id="folderModal" class="modal-backdrop">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 style="margin: 0;">Select Folder</h3>
-        <button id="closeFolderModalBtn" class="btn ghost small">✕</button>
-      </div>
-      <div class="modal-content">
-        <div class="form-field">
-          <label class="form-label">Move note to folder:</label>
-          <select id="folderSelect" class="form-select">
-            <option value="">No folder (Root)</option>
-          </select>
-        </div>
-        <div class="flex gap-2">
-          <button id="moveTolderBtn" class="btn primary small">Move</button>
-          <button id="cancelFolderBtn" class="btn ghost small">Cancel</button>
         </div>
       </div>
     </div>
@@ -1027,13 +1085,12 @@
         this.PASSWORD_DEFAULT = "notes@123";
         this.state = {
           notes: new Map(),
-          folders: new Map(),
           activeNoteId: null,
+          attachments: new Map(),
           settings: {
             theme: localStorage.getItem('notes-theme') || 'dark',
-            sidebarWidth: parseInt(localStorage.getItem('notes-sidebar-width')) || 250,
-            mdEditorWidth: parseInt(localStorage.getItem('notes-md-width')) || 300,
-            mdEditorVisible: localStorage.getItem('notes-md-visible') === 'true',
+            sidebarWidth: parseInt(localStorage.getItem('notes-sidebar-width')) || 320,
+            editorSplit: localStorage.getItem('notes-editor-split') !== 'false',
             autoSave: true,
             syncEnabled: false,
             githubToken: localStorage.getItem('notes-github-token') || '',
@@ -1042,18 +1099,15 @@
           ui: {
             sidebarVisible: true,
             focusMode: false,
+            currentView: 'split', // 'split', 'wysiwyg', 'markdown'
             searchQuery: '',
-            activeFilter: 'all',
-            expandedFolders: new Set()
+            activeFilter: 'all'
           }
         };
 
         this.debounceTimeouts = new Map();
         this.isResizing = false;
-        this.turndown = new TurndownService({ 
-          headingStyle: 'atx',
-          codeBlockStyle: 'fenced'
-        });
+        this.turndown = new TurndownService({ headingStyle: 'atx' });
         
         this.init();
       }
@@ -1061,11 +1115,12 @@
       // Initialization
       async init() {
         await this.loadEnv();
+        // Override default password from .env if provided
         if (this.env && this.env.APP_PASSWORD) {
           this.PASSWORD_DEFAULT = this.env.APP_PASSWORD;
         }
         await this.initializePasswordGate();
-        this.loadData();
+        this.loadNotes();
         this.setupEventListeners();
         this.setupResizer();
         this.applyTheme();
@@ -1106,19 +1161,17 @@
           const storedHash = localStorage.getItem('notes-password-hash');
 
           if (hash === storedHash) {
-            // Skip sync requirement - allow offline usage
-            loginScreen.classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            
-            // Try to sync in background if configured
-            if (this.state.settings.syncEnabled && this.state.settings.githubToken) {
-              this.updateSyncStatus('syncing');
-              this.syncFromGist().then(success => {
-                this.updateSyncStatus(success ? 'synced' : 'error');
-              });
+            // Require online + gist sync before allowing app usage
+            this.updateSyncStatus('syncing');
+            const ok = await this.ensureInitialSync();
+            if (ok) {
+              loginScreen.classList.add('hidden');
+              document.getElementById('app').classList.remove('hidden');
+              callback();
+            } else {
+              this.updateSyncStatus('error');
+              loginError.textContent = 'Sync required: Unable to connect to GitHub Gist. Please check connectivity and credentials.';
             }
-            
-            callback();
           } else {
             loginError.textContent = 'Incorrect password';
             passwordInput.value = '';
@@ -1142,45 +1195,37 @@
       }
 
       // Data Management
-      loadData() {
+      loadNotes() {
         const stored = localStorage.getItem('notes-data');
         if (stored) {
           try {
             const data = JSON.parse(stored);
-            this.state.notes = new Map(data.notes?.map(note => [note.id, note]) || []);
-            this.state.folders = new Map(data.folders?.map(folder => [folder.id, folder]) || []);
+            this.state.notes = new Map(data.notes.map(note => [note.id, note]));
+            this.state.attachments = new Map(data.attachments || []);
           } catch (e) {
             console.error('Failed to load notes:', e);
           }
         }
       }
 
-      saveData() {
-        try {
-          const data = {
-            notes: Array.from(this.state.notes.values()),
-            folders: Array.from(this.state.folders.values()),
-            version: 3,
-            savedAt: new Date().toISOString()
-          };
-          localStorage.setItem('notes-data', JSON.stringify(data));
-          this.updateSaveStatus('saved');
-          
-          // Background sync if enabled
-          if (this.state.settings.syncEnabled && this.state.settings.githubToken) {
-            this.updateSyncStatus('syncing');
-            this.syncToGist().then(success => {
-              this.updateSyncStatus(success ? 'synced' : 'error');
-            });
-          }
-        } catch (error) {
-          console.error('Save failed:', error);
-          this.updateSaveStatus('error');
+      saveNotes() {
+        const data = {
+          notes: Array.from(this.state.notes.values()),
+          attachments: Array.from(this.state.attachments.entries()),
+          version: 2,
+          savedAt: new Date().toISOString()
+        };
+        localStorage.setItem('notes-data', JSON.stringify(data));
+        this.updateSaveStatus('saved');
+        // Attempt background sync when enabled
+        if (this.state.settings.syncEnabled && this.state.settings.githubToken) {
+          this.updateSyncStatus('syncing');
+          this.syncToGist();
         }
       }
 
       // Note Operations
-      createNote(title = 'Untitled', folderId = null) {
+      createNote(title = 'Untitled') {
         const id = this.generateId();
         const now = new Date().toISOString();
         const note = {
@@ -1190,66 +1235,30 @@
           markdown: '',
           tags: [],
           pinned: false,
-          folderId: folderId,
           createdAt: now,
           updatedAt: now
         };
 
         this.state.notes.set(id, note);
-        this.saveData();
+        this.state.attachments.set(id, []);
+        this.saveNotes();
         this.render();
         this.loadNote(id);
         return note;
-      }
-
-      createFolder(name) {
-        const id = this.generateId();
-        const folder = {
-          id,
-          name: name || 'New Folder',
-          createdAt: new Date().toISOString()
-        };
-        
-        this.state.folders.set(id, folder);
-        this.state.ui.expandedFolders.add(id);
-        this.saveData();
-        this.render();
-        return folder;
       }
 
       deleteNote(id) {
         if (!id || !confirm('Delete this note? This action cannot be undone.')) return;
         
         this.state.notes.delete(id);
+        this.state.attachments.delete(id);
         
         if (this.state.activeNoteId === id) {
           this.state.activeNoteId = null;
           this.clearEditor();
         }
         
-        this.saveData();
-        this.render();
-      }
-
-      deleteFolder(id) {
-        if (!id || !confirm('Delete this folder and all its notes? This action cannot be undone.')) return;
-        
-        // Delete all notes in the folder
-        for (const [noteId, note] of this.state.notes) {
-          if (note.folderId === id) {
-            this.state.notes.delete(noteId);
-          }
-        }
-        
-        this.state.folders.delete(id);
-        this.state.ui.expandedFolders.delete(id);
-        
-        if (this.state.activeNoteId && !this.state.notes.has(this.state.activeNoteId)) {
-          this.state.activeNoteId = null;
-          this.clearEditor();
-        }
-        
-        this.saveData();
+        this.saveNotes();
         this.render();
       }
 
@@ -1261,37 +1270,13 @@
         
         document.getElementById('titleInput').value = note.title || '';
         document.getElementById('markdownEditor').value = note.markdown || '';
+        document.getElementById('wysiwygEditor').innerHTML = note.content || '';
         
-        // Safely set HTML content and strip any problematic elements
-        const cleanContent = this.sanitizeHtmlContent(note.content || '');
-        document.getElementById('wysiwygEditor').innerHTML = cleanContent;
-        
+        this.updatePreview();
+        this.renderAttachments();
         this.updateWordCount();
         this.updateTags();
         this.render();
-      }
-
-      // Sanitize HTML content to prevent issues with images and other problematic elements
-      sanitizeHtmlContent(html) {
-        // Create a temporary div to parse HTML
-        const temp = document.createElement('div');
-        temp.innerHTML = html;
-        
-        // Remove all images to prevent sync issues
-        const images = temp.querySelectorAll('img');
-        images.forEach(img => {
-          const placeholder = document.createElement('span');
-          placeholder.textContent = '[Image removed]';
-          placeholder.style.color = 'var(--muted)';
-          placeholder.style.fontStyle = 'italic';
-          img.parentNode.replaceChild(placeholder, img);
-        });
-        
-        // Remove other problematic elements
-        const problematic = temp.querySelectorAll('script, object, embed, iframe, video, audio');
-        problematic.forEach(el => el.remove());
-        
-        return temp.innerHTML;
       }
 
       updateNote(updates) {
@@ -1309,19 +1294,12 @@
         this.render();
       }
 
-      moveNoteToFolder(noteId, folderId) {
-        const note = this.state.notes.get(noteId);
-        if (!note) return;
-        
-        note.folderId = folderId || null;
-        this.updateNote(note);
-      }
-
       // Editor Operations
       clearEditor() {
         document.getElementById('titleInput').value = '';
         document.getElementById('markdownEditor').value = '';
         document.getElementById('wysiwygEditor').innerHTML = '';
+        document.getElementById('attachmentsGrid').innerHTML = '';
         this.updateWordCount();
         this.updateTags();
       }
@@ -1335,11 +1313,16 @@
         } else if (source === 'markdown') {
           const markdown = document.getElementById('markdownEditor').value;
           const html = marked.parse(markdown);
-          const cleanHtml = this.sanitizeHtmlContent(html);
-          document.getElementById('wysiwygEditor').innerHTML = cleanHtml;
-          this.updateNote({ content: cleanHtml, markdown });
+          document.getElementById('wysiwygEditor').innerHTML = html;
+          this.updateNote({ content: html, markdown });
         }
+        this.updatePreview();
         this.updateWordCount();
+      }
+
+      updatePreview() {
+        const markdown = document.getElementById('markdownEditor').value;
+        document.getElementById('markdownPreview').innerHTML = marked.parse(markdown);
       }
 
       // Toolbar Commands
@@ -1351,12 +1334,54 @@
         this.syncEditors('wysiwyg');
       }
 
-      insertCheckbox() {
-        const editor = document.getElementById('wysiwygEditor');
-        editor.focus();
-        const checkbox = '<input type="checkbox" /> ';
-        document.execCommand('insertHTML', false, checkbox);
-        this.syncEditors('wysiwyg');
+      // File Handling
+      async handleFiles(files) {
+        if (!this.state.activeNoteId) return;
+
+        const attachments = this.state.attachments.get(this.state.activeNoteId) || [];
+        
+        for (const file of files) {
+          const attachment = {
+            id: this.generateId(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            dataUrl: await this.fileToDataUrl(file),
+            createdAt: new Date().toISOString()
+          };
+          attachments.push(attachment);
+        }
+        
+        this.state.attachments.set(this.state.activeNoteId, attachments);
+        this.saveNotes();
+        this.renderAttachments();
+      }
+
+      fileToDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      removeAttachment(attachmentId) {
+        if (!this.state.activeNoteId) return;
+        
+        const attachments = this.state.attachments.get(this.state.activeNoteId) || [];
+        const filtered = attachments.filter(a => a.id !== attachmentId);
+        
+        this.state.attachments.set(this.state.activeNoteId, filtered);
+        this.saveNotes();
+        this.renderAttachments();
+      }
+
+      downloadAttachment(attachment) {
+        const a = document.createElement('a');
+        a.href = attachment.dataUrl;
+        a.download = attachment.name;
+        a.click();
       }
 
       // UI Updates
@@ -1367,12 +1392,9 @@
 
       renderNoteList() {
         const noteList = document.getElementById('noteList');
-        
-        // Get folders and notes
-        const folders = Array.from(this.state.folders.values());
         const notes = Array.from(this.state.notes.values());
         
-        // Filter based on search and active filter
+        // Filter notes
         let filteredNotes = notes;
         
         if (this.state.ui.searchQuery) {
@@ -1384,89 +1406,80 @@
           );
         }
         
-        if (this.state.ui.activeFilter === 'folders') {
-          filteredNotes = filteredNotes.filter(note => note.folderId);
-        } else if (this.state.ui.activeFilter === 'pinned') {
+        if (this.state.ui.activeFilter === 'pinned') {
           filteredNotes = filteredNotes.filter(note => note.pinned);
         } else if (this.state.ui.activeFilter === 'today') {
           const today = new Date().toDateString();
           filteredNotes = filteredNotes.filter(note => 
             new Date(note.updatedAt).toDateString() === today
           );
+        } else if (this.state.ui.activeFilter === 'files') {
+          filteredNotes = filteredNotes.filter(note => {
+            const attachments = this.state.attachments.get(note.id) || [];
+            return attachments.length > 0;
+          });
         }
         
-        // Group notes by folder
-        const rootNotes = filteredNotes.filter(note => !note.folderId);
-        const folderNotes = new Map();
-        
-        filteredNotes.filter(note => note.folderId).forEach(note => {
-          if (!folderNotes.has(note.folderId)) {
-            folderNotes.set(note.folderId, []);
-          }
-          folderNotes.get(note.folderId).push(note);
+        // Sort notes
+        filteredNotes.sort((a, b) => {
+          if (a.pinned && !b.pinned) return -1;
+          if (!a.pinned && b.pinned) return 1;
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
         
-        // Sort notes
-        const sortNotes = (notesList) => {
-          return notesList.sort((a, b) => {
-            if (a.pinned && !b.pinned) return -1;
-            if (!a.pinned && b.pinned) return 1;
-            return new Date(b.updatedAt) - new Date(a.updatedAt);
-          });
-        };
-        
-        let html = '';
-        
-        // Render folders with their notes
-        folders.forEach(folder => {
-          const folderNotesArray = folderNotes.get(folder.id) || [];
-          if (folderNotesArray.length === 0 && this.state.ui.searchQuery) return;
+        noteList.innerHTML = filteredNotes.map(note => {
+          const attachments = this.state.attachments.get(note.id) || [];
+          const preview = note.markdown.substring(0, 100).replace(/[#*_`]/g, '');
+          const isActive = note.id === this.state.activeNoteId;
           
-          const isExpanded = this.state.ui.expandedFolders.has(folder.id);
-          const sortedFolderNotes = sortNotes(folderNotesArray);
-          
-          html += `
-            <div class="folder-item ${isExpanded ? 'expanded' : ''}" data-folder-id="${folder.id}">
-              <div class="folder-header">
-                <span class="folder-toggle">${isExpanded ? '▼' : '▶'}</span>
-                <span>📁 ${this.escapeHtml(folder.name)} (${sortedFolderNotes.length})</span>
-                <button class="btn ghost small" onclick="app.deleteFolder('${folder.id}')" style="margin-left: auto;">🗑️</button>
-              </div>
-              ${isExpanded ? `
-                <div class="folder-notes">
-                  ${sortedFolderNotes.map(note => this.renderNoteItem(note)).join('')}
+          return `
+            <div class="note-item ${isActive ? 'active' : ''}" data-note-id="${note.id}">
+              <div class="note-title">${this.escapeHtml(note.title)}</div>
+              <div class="note-preview">${this.escapeHtml(preview)}${preview.length >= 100 ? '...' : ''}</div>
+              <div class="note-meta">
+                <div class="flex items-center gap-2">
+                  <span>${this.formatDate(note.updatedAt)}</span>
+                  ${note.pinned ? '<span>📌</span>' : ''}
+                  ${attachments.length > 0 ? `<span>📎 ${attachments.length}</span>` : ''}
                 </div>
-              ` : ''}
+                <div class="note-tags">
+                  ${note.tags.slice(0, 3).map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                </div>
+              </div>
             </div>
           `;
-        });
-        
-        // Render root notes
-        const sortedRootNotes = sortNotes(rootNotes);
-        html += sortedRootNotes.map(note => this.renderNoteItem(note)).join('');
-        
-        noteList.innerHTML = html;
+        }).join('');
       }
 
-      renderNoteItem(note) {
-        const isActive = note.id === this.state.activeNoteId;
+      renderAttachments() {
+        if (!this.state.activeNoteId) return;
         
-        return `
-          <div class="note-item ${isActive ? 'active' : ''}" data-note-id="${note.id}">
-            <div class="note-title">${this.escapeHtml(note.title)}</div>
-            <div class="note-meta">
-              <div class="note-dates">
-                <span>Modified: ${this.formatDate(note.updatedAt)}</span>
-                <span>Created: ${this.formatDate(note.createdAt)}</span>
-              </div>
-              <div class="flex items-center gap-1">
-                ${note.pinned ? '<span>📌</span>' : ''}
-                <button class="btn ghost small" onclick="app.showFolderModal('${note.id}')" title="Move to folder">📁</button>
-                <button class="btn ghost small" onclick="app.deleteNote('${note.id}')" title="Delete">🗑️</button>
+        const attachments = this.state.attachments.get(this.state.activeNoteId) || [];
+        const grid = document.getElementById('attachmentsGrid');
+        
+        document.getElementById('attachmentCount').textContent = 
+          `${attachments.length} file${attachments.length !== 1 ? 's' : ''}`;
+        
+        grid.innerHTML = attachments.map(attachment => `
+          <div class="attachment-item">
+            <div class="attachment-preview">
+              ${attachment.type.startsWith('image/') 
+                ? `<img src="${attachment.dataUrl}" alt="${attachment.name}" />`
+                : `<div style="color: var(--muted); font-size: 24px;">📄</div>`
+              }
+            </div>
+            <div class="attachment-info">
+              <div class="attachment-name">${this.escapeHtml(attachment.name)}</div>
+              <div class="attachment-meta">
+                <span>${this.formatFileSize(attachment.size)}</span>
+                <div class="attachment-actions">
+                  <button class="btn small" onclick="app.downloadAttachment('${attachment.id}')">Download</button>
+                  <button class="btn small danger" onclick="app.removeAttachment('${attachment.id}')">Remove</button>
+                </div>
               </div>
             </div>
           </div>
-        `;
+        `).join('');
       }
 
       updateSaveStatus(status) {
@@ -1479,9 +1492,6 @@
         } else if (status === 'saving') {
           dot.className = 'status-dot unsaved';
           text.textContent = 'Saving...';
-        } else if (status === 'error') {
-          dot.className = 'status-dot unsaved';
-          text.textContent = 'Save Error';
         } else {
           dot.className = 'status-dot unsaved';
           text.textContent = 'Unsaved';
@@ -1520,7 +1530,7 @@
         document.getElementById('toggleSidebarBtn').onclick = () => this.toggleSidebar();
         document.getElementById('newNoteBtn').onclick = () => this.createNote();
         document.getElementById('newNoteBtn2').onclick = () => this.createNote();
-        document.getElementById('newFolderBtn').onclick = () => this.showCreateFolderDialog();
+        document.getElementById('newFolderBtn').onclick = () => this.createFolder();
         document.getElementById('deleteNoteBtn').onclick = () => this.deleteNote(this.state.activeNoteId);
         document.getElementById('settingsBtn').onclick = () => this.showSettings();
         document.getElementById('themeToggleBtn').onclick = () => this.toggleTheme();
@@ -1555,24 +1565,10 @@
           this.syncEditors('wysiwyg');
         };
 
-        // Prevent paste of images in WYSIWYG editor
-        document.getElementById('wysiwygEditor').onpaste = (e) => {
-          e.preventDefault();
-          const text = (e.clipboardData || window.clipboardData).getData('text/plain');
-          document.execCommand('insertText', false, text);
-          this.syncEditors('wysiwyg');
-        };
-
         // Note list clicks
         document.getElementById('noteList').onclick = (e) => {
           const noteItem = e.target.closest('.note-item');
-          const folderItem = e.target.closest('.folder-item');
-          const folderToggle = e.target.closest('.folder-toggle');
-          
-          if (folderToggle && folderItem) {
-            e.stopPropagation();
-            this.toggleFolder(folderItem.dataset.folderId);
-          } else if (noteItem) {
+          if (noteItem) {
             this.loadNote(noteItem.dataset.noteId);
           }
         };
@@ -1587,8 +1583,6 @@
         });
 
         // Special toolbar buttons
-        document.getElementById('checkboxBtn').onclick = () => this.insertCheckbox();
-        
         document.getElementById('colorBtn').onclick = () => {
           document.getElementById('colorPicker').click();
         };
@@ -1611,23 +1605,39 @@
           this.execCommand('formatBlock', 'blockquote');
         };
 
-        document.getElementById('toggleMdBtn').onclick = () => this.toggleMarkdownEditor();
-        document.getElementById('hideMdBtn').onclick = () => this.hideMarkdownEditor();
+        document.getElementById('toggleViewBtn').onclick = () => this.toggleEditorView();
         document.getElementById('focusModeBtn').onclick = () => this.toggleFocusMode();
+
+        // Markdown tabs
+        document.getElementById('writeTab').onclick = () => this.showMarkdownTab('write');
+        document.getElementById('previewTab').onclick = () => this.showMarkdownTab('preview');
+
+        // File handling
+        document.getElementById('addFileBtn').onclick = () => {
+          document.getElementById('fileInput').click();
+        };
+
+        document.getElementById('fileInput').onchange = (e) => {
+          this.handleFiles(e.target.files);
+          e.target.value = '';
+        };
+
+        document.getElementById('clearFilesBtn').onclick = () => {
+          if (confirm('Remove all attachments from this note?')) {
+            this.state.attachments.set(this.state.activeNoteId, []);
+            this.saveNotes();
+            this.renderAttachments();
+          }
+        };
 
         // Settings modal
         document.getElementById('closeSettingsBtn').onclick = () => this.hideSettings();
-        
-        // Folder modal
-        document.getElementById('closeFolderModalBtn').onclick = () => this.hideFolderModal();
-        document.getElementById('cancelFolderBtn').onclick = () => this.hideFolderModal();
-        document.getElementById('moveTolderBtn').onclick = () => this.moveNoteToSelectedFolder();
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
           if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
-            this.saveData();
+            this.saveNotes();
           }
           if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
             e.preventDefault();
@@ -1643,7 +1653,6 @@
           }
           if (e.key === 'Escape') {
             this.hideSettings();
-            this.hideFolderModal();
           }
         });
       }
@@ -1675,42 +1684,21 @@
         this.updateNote(note);
       }
 
-              toggleFolder(folderId) {
-        if (this.state.ui.expandedFolders.has(folderId)) {
-          this.state.ui.expandedFolders.delete(folderId);
-        } else {
-          this.state.ui.expandedFolders.add(folderId);
-        }
-        this.render();
-      }
-
-      toggleMarkdownEditor() {
-        this.state.settings.mdEditorVisible = !this.state.settings.mdEditorVisible;
-        localStorage.setItem('notes-md-visible', this.state.settings.mdEditorVisible);
-        
+      toggleEditorView() {
         const container = document.getElementById('editorContainer');
-        const btn = document.getElementById('toggleMdBtn');
+        const btn = document.getElementById('toggleViewBtn');
         
-        if (this.state.settings.mdEditorVisible) {
-          container.classList.remove('md-hidden');
-          container.style.setProperty('--md-editor-width', this.state.settings.mdEditorWidth + 'px');
-          container.style.setProperty('--md-divider-width', '1px');
-          btn.textContent = 'Hide MD';
+        if (this.state.ui.currentView === 'split') {
+          container.classList.add('single-pane');
+          document.getElementById('markdownPane').classList.add('hidden');
+          btn.textContent = 'Show Split';
+          this.state.ui.currentView = 'wysiwyg';
         } else {
-          container.classList.add('md-hidden');
-          btn.textContent = 'Show MD';
+          container.classList.remove('single-pane');
+          document.getElementById('markdownPane').classList.remove('hidden');
+          btn.textContent = 'Split View';
+          this.state.ui.currentView = 'split';
         }
-      }
-
-      hideMarkdownEditor() {
-        this.state.settings.mdEditorVisible = false;
-        localStorage.setItem('notes-md-visible', 'false');
-        
-        const container = document.getElementById('editorContainer');
-        const btn = document.getElementById('toggleMdBtn');
-        
-        container.classList.add('md-hidden');
-        btn.textContent = 'Show MD';
       }
 
       toggleFocusMode() {
@@ -1727,45 +1715,24 @@
         }
       }
 
-      showCreateFolderDialog() {
-        const name = prompt('Folder name:');
-        if (name && name.trim()) {
-          this.createFolder(name.trim());
+      showMarkdownTab(tab) {
+        const writeTab = document.getElementById('writeTab');
+        const previewTab = document.getElementById('previewTab');
+        const editor = document.getElementById('markdownEditor');
+        const preview = document.getElementById('markdownPreview');
+        
+        if (tab === 'write') {
+          writeTab.classList.add('active');
+          previewTab.classList.remove('active');
+          editor.classList.remove('hidden');
+          preview.classList.add('hidden');
+        } else {
+          writeTab.classList.remove('active');
+          previewTab.classList.add('active');
+          editor.classList.add('hidden');
+          preview.classList.remove('hidden');
+          this.updatePreview();
         }
-      }
-
-      showFolderModal(noteId) {
-        const note = this.state.notes.get(noteId);
-        if (!note) return;
-        
-        this.currentNoteToMove = noteId;
-        
-        // Populate folder options
-        const select = document.getElementById('folderSelect');
-        select.innerHTML = '<option value="">No folder (Root)</option>';
-        
-        for (const folder of this.state.folders.values()) {
-          const option = document.createElement('option');
-          option.value = folder.id;
-          option.textContent = folder.name;
-          option.selected = note.folderId === folder.id;
-          select.appendChild(option);
-        }
-        
-        document.getElementById('folderModal').classList.add('show');
-      }
-
-      hideFolderModal() {
-        document.getElementById('folderModal').classList.remove('show');
-        this.currentNoteToMove = null;
-      }
-
-      moveNoteToSelectedFolder() {
-        if (!this.currentNoteToMove) return;
-        
-        const folderId = document.getElementById('folderSelect').value || null;
-        this.moveNoteToFolder(this.currentNoteToMove, folderId);
-        this.hideFolderModal();
       }
 
       showSettings() {
@@ -1833,23 +1800,6 @@
             this.showToast('Password updated successfully');
           }
         };
-
-        // Data management
-        document.getElementById('clearSyncDataBtn').onclick = () => {
-          if (confirm('Clear all sync data and reset sync status? This will not delete your notes.')) {
-            localStorage.removeItem('notes-gist-id');
-            this.state.settings.gistId = '';
-            this.updateSyncStatus('offline');
-            this.showToast('Sync data cleared');
-          }
-        };
-
-        document.getElementById('resetAppBtn').onclick = () => {
-          if (confirm('Reset the entire app? This will delete ALL notes and settings. This action cannot be undone.')) {
-            localStorage.clear();
-            location.reload();
-          }
-        };
       }
 
       hideSettings() {
@@ -1860,31 +1810,31 @@
       async exportNotes() {
         const zip = new JSZip();
         const notesFolder = zip.folder('notes');
-        const foldersFolder = zip.folder('folders');
         
         // Add metadata
         const metadata = {
           exportedAt: new Date().toISOString(),
-          version: 3,
-          totalNotes: this.state.notes.size,
-          totalFolders: this.state.folders.size
+          version: 2,
+          totalNotes: this.state.notes.size
         };
         zip.file('metadata.json', JSON.stringify(metadata, null, 2));
         
-        // Add folders
-        for (const [id, folder] of this.state.folders) {
-          const filename = this.sanitizeFilename(folder.name) + '.json';
-          foldersFolder.file(filename, JSON.stringify(folder, null, 2));
-        }
-        
         // Add notes
         for (const [id, note] of this.state.notes) {
-          const folderName = note.folderId ? 
-            this.sanitizeFilename(this.state.folders.get(note.folderId)?.name || 'Unknown') : 
-            'root';
-          const noteFolder = notesFolder.folder(folderName);
           const filename = this.sanitizeFilename(note.title) + '.md';
-          noteFolder.file(filename, note.markdown || '');
+          notesFolder.file(filename, note.markdown || '');
+        }
+        
+        // Add attachments
+        const attachmentsFolder = zip.folder('attachments');
+        for (const [noteId, attachments] of this.state.attachments) {
+          if (attachments.length > 0) {
+            const noteFolder = attachmentsFolder.folder(noteId);
+            for (const attachment of attachments) {
+              const base64Data = attachment.dataUrl.split(',')[1];
+              noteFolder.file(attachment.name, base64Data, { base64: true });
+            }
+          }
         }
         
         const blob = await zip.generateAsync({ type: 'blob' });
@@ -1903,66 +1853,57 @@
           const zip = await JSZip.loadAsync(file);
           let importedCount = 0;
           
-          // Import folders first
-          for (const [path, zipEntry] of Object.entries(zip.files)) {
-            if (path.startsWith('folders/') && path.endsWith('.json')) {
-              const content = await zipEntry.async('string');
-              const folderData = JSON.parse(content);
-              
-              const folder = {
-                id: this.generateId(),
-                name: folderData.name || 'Imported Folder',
-                createdAt: folderData.createdAt || new Date().toISOString()
-              };
-              
-              this.state.folders.set(folder.id, folder);
-            }
-          }
-          
           // Import notes
           for (const [path, zipEntry] of Object.entries(zip.files)) {
             if (path.startsWith('notes/') && path.endsWith('.md')) {
               const content = await zipEntry.async('string');
-              const pathParts = path.split('/');
-              const folderName = pathParts[1];
-              const filename = pathParts[2].replace('.md', '');
-              
-              // Find or create folder
-              let folderId = null;
-              if (folderName !== 'root') {
-                const folder = Array.from(this.state.folders.values())
-                  .find(f => this.sanitizeFilename(f.name) === folderName);
-                if (folder) {
-                  folderId = folder.id;
-                } else {
-                  const newFolder = {
-                    id: this.generateId(),
-                    name: folderName.replace(/_/g, ' '),
-                    createdAt: new Date().toISOString()
-                  };
-                  this.state.folders.set(newFolder.id, newFolder);
-                  folderId = newFolder.id;
-                }
-              }
+              const filename = path.split('/').pop().replace('.md', '');
               
               const note = {
                 id: this.generateId(),
-                title: filename.replace(/_/g, ' '),
+                title: filename,
                 content: marked.parse(content),
                 markdown: content,
                 tags: this.extractTags(content),
                 pinned: false,
-                folderId: folderId,
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString()
               };
               
               this.state.notes.set(note.id, note);
+              this.state.attachments.set(note.id, []);
               importedCount++;
             }
           }
           
-          this.saveData();
+          // Import attachments
+          for (const [path, zipEntry] of Object.entries(zip.files)) {
+            if (path.startsWith('attachments/') && !zipEntry.dir) {
+              const pathParts = path.split('/');
+              if (pathParts.length >= 3) {
+                const noteId = pathParts[1];
+                const filename = pathParts.slice(2).join('/');
+                const base64Data = await zipEntry.async('base64');
+                const mimeType = this.getMimeType(filename);
+                const dataUrl = `data:${mimeType};base64,${base64Data}`;
+                
+                const attachment = {
+                  id: this.generateId(),
+                  name: filename,
+                  type: mimeType,
+                  size: base64Data.length * 0.75,
+                  dataUrl: dataUrl,
+                  createdAt: new Date().toISOString()
+                };
+                
+                const attachments = this.state.attachments.get(noteId) || [];
+                attachments.push(attachment);
+                this.state.attachments.set(noteId, attachments);
+              }
+            }
+          }
+          
+          this.saveNotes();
           this.render();
           this.showToast(`Imported ${importedCount} notes successfully`);
           this.hideSettings();
@@ -1974,16 +1915,18 @@
 
       // Resizer functionality
       setupResizer() {
-        const resizer = document.getElementById('mdResizer');
+        const resizer = document.getElementById('resizer');
         const container = document.getElementById('editorContainer');
         let isResizing = false;
         let startX = 0;
-        let startWidth = this.state.settings.mdEditorWidth;
+        let startWidth = 50;
 
         resizer.onmousedown = (e) => {
           isResizing = true;
           startX = e.clientX;
-          startWidth = this.state.settings.mdEditorWidth;
+          const containerWidth = container.offsetWidth;
+          const wysiwygPane = document.getElementById('wysiwygPane');
+          startWidth = (wysiwygPane.offsetWidth / containerWidth) * 100;
           resizer.classList.add('resizing');
           document.body.style.cursor = 'col-resize';
           e.preventDefault();
@@ -1992,13 +1935,12 @@
         document.onmousemove = (e) => {
           if (!isResizing) return;
           
-          const deltaX = startX - e.clientX; // Reverse direction
-          const newWidth = Math.min(Math.max(startWidth + deltaX, 200), 600);
+          const deltaX = e.clientX - startX;
+          const containerWidth = container.offsetWidth;
+          const deltaPercent = (deltaX / containerWidth) * 100;
+          const newWidth = Math.min(Math.max(startWidth + deltaPercent, 20), 80);
           
-          this.state.settings.mdEditorWidth = newWidth;
-          localStorage.setItem('notes-md-width', newWidth);
-          
-          container.style.setProperty('--md-editor-width', newWidth + 'px');
+          container.style.gridTemplateColumns = `${newWidth}% 1px ${100 - newWidth - 0.1}%`;
         };
 
         document.onmouseup = () => {
@@ -2007,21 +1949,13 @@
           resizer.classList.remove('resizing');
           document.body.style.cursor = '';
         };
-
-        // Apply initial width if MD editor is visible
-        if (this.state.settings.mdEditorVisible) {
-          container.style.setProperty('--md-editor-width', this.state.settings.mdEditorWidth + 'px');
-          container.style.setProperty('--md-divider-width', '1px');
-          container.classList.remove('md-hidden');
-          document.getElementById('toggleMdBtn').textContent = 'Hide MD';
-        }
       }
 
       // Auto-save functionality
       startAutoSave() {
         setInterval(() => {
           if (this.state.settings.autoSave) {
-            this.saveData();
+            this.saveNotes();
           }
         }, 30000); // Auto-save every 30 seconds
       }
@@ -2029,7 +1963,7 @@
       debounceSave() {
         clearTimeout(this.debounceTimeouts.get('save'));
         this.debounceTimeouts.set('save', setTimeout(() => {
-          this.saveData();
+          this.saveNotes();
         }, 1000));
       }
 
@@ -2066,6 +2000,33 @@
         return date.toLocaleDateString();
       }
 
+      formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+
+      getMimeType(filename) {
+        const ext = filename.split('.').pop().toLowerCase();
+        const mimeTypes = {
+          'png': 'image/png',
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'gif': 'image/gif',
+          'webp': 'image/webp',
+          'svg': 'image/svg+xml',
+          'pdf': 'application/pdf',
+          'doc': 'application/msword',
+          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'txt': 'text/plain',
+          'md': 'text/markdown',
+          'json': 'application/json'
+        };
+        return mimeTypes[ext] || 'application/octet-stream';
+      }
+
       extractTags(text) {
         const tagRegex = /#([a-zA-Z0-9_-]+)/g;
         const matches = text.match(tagRegex) || [];
@@ -2093,16 +2054,16 @@
         toast.textContent = message;
         document.body.appendChild(toast);
 
+        // Slide in
         setTimeout(() => {
           toast.style.transform = 'translateX(0)';
         }, 10);
 
+        // Slide out and remove
         setTimeout(() => {
           toast.style.transform = 'translateX(100%)';
           setTimeout(() => {
-            if (document.body.contains(toast)) {
-              document.body.removeChild(toast);
-            }
+            document.body.removeChild(toast);
           }, 300);
         }, 3000);
       }
@@ -2110,20 +2071,15 @@
       // Cloud sync functionality (GitHub Gist)
       async syncToGist() {
         if (!this.state.settings.syncEnabled || !this.state.settings.githubToken) {
-          return false;
+          return;
         }
 
         try {
           const syncData = {
-            notes: Array.from(this.state.notes.values()).map(note => ({
-              ...note,
-              // Remove any problematic content before syncing
-              content: this.sanitizeHtmlContent(note.content || ''),
-              markdown: note.markdown || ''
-            })),
-            folders: Array.from(this.state.folders.values()),
+            notes: Array.from(this.state.notes.values()),
+            attachments: Array.from(this.state.attachments.entries()),
             syncedAt: new Date().toISOString(),
-            version: 3
+            version: 2
           };
 
           const gistData = {
@@ -2159,20 +2115,21 @@
               this.state.settings.gistId = result.id;
               localStorage.setItem('notes-gist-id', result.id);
             }
+            this.updateSyncStatus('synced');
             return true;
           } else {
-            console.error(`Sync failed: ${response.status}`, await response.text());
-            return false;
+            throw new Error(`Sync failed: ${response.status}`);
           }
         } catch (error) {
           console.error('Sync error:', error);
+          this.updateSyncStatus('error');
           return false;
         }
       }
 
       async syncFromGist() {
         if (!this.state.settings.syncEnabled || !this.state.settings.githubToken || !this.state.settings.gistId) {
-          return false;
+          return;
         }
 
         try {
@@ -2189,24 +2146,20 @@
             if (content) {
               const syncData = JSON.parse(content);
               
-              // Merge data
-              this.state.notes = new Map(syncData.notes?.map(note => [note.id, {
-                ...note,
-                // Ensure content is sanitized
-                content: this.sanitizeHtmlContent(note.content || '')
-              }]) || []);
-              this.state.folders = new Map(syncData.folders?.map(folder => [folder.id, folder]) || []);
+              // Simple merge strategy - prefer remote data
+              this.state.notes = new Map(syncData.notes.map(note => [note.id, note]));
+              this.state.attachments = new Map(syncData.attachments);
               
-              this.saveData();
+              this.saveNotes();
               this.render();
+              this.updateSyncStatus('synced');
               this.showToast('Notes synced from cloud');
               return true;
             }
-          } else {
-            console.error(`Sync from gist failed: ${response.status}`);
           }
         } catch (error) {
-          console.error('Sync from gist error:', error);
+          console.error('Sync error:', error);
+          this.updateSyncStatus('error');
         }
         return false;
       }
@@ -2225,15 +2178,17 @@
         syncStatus.textContent = statusText[status] || status;
       }
 
-      // .env loader
+      // .env loader and sync gating
       async loadEnv() {
         this.env = {};
         try {
+          // Prefer JSON-based env for static hosts (e.g., Vercel)
           let res = await fetch('/env.json', { cache: 'no-store' });
           if (res.ok) {
             const json = await res.json();
             this.env = json || {};
           } else {
+            // Fallback to dotenv-style file if available locally
             res = await fetch('/.env', { cache: 'no-store' });
             if (res.ok) {
               const text = await res.text();
@@ -2241,11 +2196,12 @@
             }
           }
 
+          // Apply env to settings
           if (this.env.GITHUB_TOKEN) this.state.settings.githubToken = this.env.GITHUB_TOKEN;
           if (this.env.GIST_ID) this.state.settings.gistId = this.env.GIST_ID;
           if (this.env.GITHUB_TOKEN && this.env.GIST_ID) this.state.settings.syncEnabled = true;
         } catch (e) {
-          // No env is fine
+          // No env is fine; remain local-only until user configures
         }
       }
 
@@ -2265,6 +2221,37 @@
         });
         return env;
       }
+
+             async ensureInitialSync() {
+         // Require at least a GitHub token; Gist ID can be created on first push
+         const hasToken = !!this.state.settings.githubToken;
+         if (!this.state.settings.syncEnabled || !hasToken) {
+           return false;
+         }
+         try {
+           // Try pull first if a gist is configured; otherwise create one by pushing
+           if (this.state.settings.gistId) {
+             const pulled = await this.syncFromGist();
+             if (pulled) return true;
+           }
+           const pushed = await this.syncToGist();
+           return !!pushed;
+         } catch (e) {
+           return false;
+         }
+       }
+
+      // Create a folder-like note (simple grouping via title prefix)
+      createFolder() {
+        const name = prompt('Folder name:');
+        if (!name) return;
+        const note = this.createNote('📁 ' + name);
+        note.pinned = true;
+        this.state.notes.set(note.id, note);
+        this.saveNotes();
+        this.render();
+        this.loadNote(note.id);
+      }
     }
 
     // Initialize the app
@@ -2277,7 +2264,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         const swCode = `
-          const CACHE_NAME = 'personal-notes-v2';
+          const CACHE_NAME = 'personal-notes-v1';
           const urlsToCache = [
             '${location.href}',
             'https://cdn.jsdelivr.net/npm/marked/marked.min.js',
