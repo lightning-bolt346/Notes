@@ -108,7 +108,9 @@
     .editor-header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); }
     .title-input { font-size: 1.2rem; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); outline: none; width: 100%; }
 
-    .editor-toolbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 56px; z-index: 4; }
+    .editor-toolbar { display: flex; flex-wrap: nowrap; gap: 6px; padding: 6px 8px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 56px; z-index: 4; overflow-x: auto; white-space: nowrap; align-items: center; }
+    .editor-toolbar .btn { padding: 4px 8px; }
+    .editor-toolbar .btn.square { padding: 4px; width: 30px; height: 30px; }
     .editor { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 0; }
     .pane { min-height: 0; overflow: auto; }
 
@@ -147,6 +149,7 @@
     .login .hint { color: var(--muted); font-size: .95rem; }
 
     .hidden { display: none !important; }
+    .sidebar.collapsed { display: none !important; }
     .flex { display: flex; }
     .gap-6 { gap: 6px; }
     .gap-8 { gap: 8px; }
@@ -163,7 +166,7 @@
     }
     @media (max-width: 900px) {
       .app { grid-template-columns: 1fr; grid-template-areas: "header" "main"; }
-      .sidebar { display: none; }
+      .sidebar { display: flex; }
     }
   </style>
 </head>
@@ -836,7 +839,7 @@
         document.querySelector('.md-pane').classList.toggle('hidden');
       });
       $('#focusModeBtn').addEventListener('click', () => {
-        document.querySelector('.sidebar').classList.toggle('hidden');
+        document.querySelector('.sidebar').classList.toggle('collapsed');
       });
 
       $('#tabWrite').addEventListener('click', () => { $('#tabWrite').classList.add('active'); $('#tabPreview').classList.remove('active'); $('#mdWritePane').classList.remove('hidden'); $('#mdPreviewPane').classList.add('hidden'); });
