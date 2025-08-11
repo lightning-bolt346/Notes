@@ -2182,15 +2182,24 @@
       async loadEnv() {
         this.env = {};
         try {
-          const res = await fetch('/.env', { cache: 'no-store' });
+          // Prefer JSON-based env for static hosts (e.g., Vercel)
+          let res = await fetch('/env.json', { cache: 'no-store' });
           if (res.ok) {
-            const text = await res.text();
-            this.env = this.parseEnv(text);
-            // Apply env to settings
-            if (this.env.GITHUB_TOKEN) this.state.settings.githubToken = this.env.GITHUB_TOKEN;
-            if (this.env.GIST_ID) this.state.settings.gistId = this.env.GIST_ID;
-            if (this.env.GITHUB_TOKEN && this.env.GIST_ID) this.state.settings.syncEnabled = true;
+            const json = await res.json();
+            this.env = json || {};
+          } else {
+            // Fallback to dotenv-style file if available locally
+            res = await fetch('/.env', { cache: 'no-store' });
+            if (res.ok) {
+              const text = await res.text();
+              this.env = this.parseEnv(text);
+            }
           }
+
+          // Apply env to settings
+          if (this.env.GITHUB_TOKEN) this.state.settings.githubToken = this.env.GITHUB_TOKEN;
+          if (this.env.GIST_ID) this.state.settings.gistId = this.env.GIST_ID;
+          if (this.env.GITHUB_TOKEN && this.env.GIST_ID) this.state.settings.syncEnabled = true;
         } catch (e) {
           // No env is fine; remain local-only until user configures
         }
@@ -2213,22 +2222,24 @@
         return env;
       }
 
-      async ensureInitialSync() {
-        // Ensure we have credentials from env or local storage
-        const hasCreds = !!(this.state.settings.githubToken && this.state.settings.gistId);
-        if (!this.state.settings.syncEnabled || !hasCreds) {
-          return false;
-        }
-        try {
-          // Try pull first; if gist missing, try push to create
-          const pulled = await this.syncFromGist();
-          if (pulled) return true;
-          const pushed = await this.syncToGist();
-          return !!pushed;
-        } catch (e) {
-          return false;
-        }
-      }
+             async ensureInitialSync() {
+         // Require at least a GitHub token; Gist ID can be created on first push
+         const hasToken = !!this.state.settings.githubToken;
+         if (!this.state.settings.syncEnabled || !hasToken) {
+           return false;
+         }
+         try {
+           // Try pull first if a gist is configured; otherwise create one by pushing
+           if (this.state.settings.gistId) {
+             const pulled = await this.syncFromGist();
+             if (pulled) return true;
+           }
+           const pushed = await this.syncToGist();
+           return !!pushed;
+         } catch (e) {
+           return false;
+         }
+       }
 
       // Create a folder-like note (simple grouping via title prefix)
       createFolder() {
