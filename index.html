@@ -1114,6 +1114,11 @@
 
       // Initialization
       async init() {
+        await this.loadEnv();
+        // Override default password from .env if provided
+        if (this.env && this.env.APP_PASSWORD) {
+          this.PASSWORD_DEFAULT = this.env.APP_PASSWORD;
+        }
         await this.initializePasswordGate();
         this.loadNotes();
         this.setupEventListeners();
@@ -1156,9 +1161,17 @@
           const storedHash = localStorage.getItem('notes-password-hash');
 
           if (hash === storedHash) {
-            loginScreen.classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            callback();
+            // Require online + gist sync before allowing app usage
+            this.updateSyncStatus('syncing');
+            const ok = await this.ensureInitialSync();
+            if (ok) {
+              loginScreen.classList.add('hidden');
+              document.getElementById('app').classList.remove('hidden');
+              callback();
+            } else {
+              this.updateSyncStatus('error');
+              loginError.textContent = 'Sync required: Unable to connect to GitHub Gist. Please check connectivity and credentials.';
+            }
           } else {
             loginError.textContent = 'Incorrect password';
             passwordInput.value = '';
@@ -1204,6 +1217,11 @@
         };
         localStorage.setItem('notes-data', JSON.stringify(data));
         this.updateSaveStatus('saved');
+        // Attempt background sync when enabled
+        if (this.state.settings.syncEnabled && this.state.settings.githubToken) {
+          this.updateSyncStatus('syncing');
+          this.syncToGist();
+        }
       }
 
       // Note Operations
@@ -1309,6 +1327,9 @@
 
       // Toolbar Commands
       execCommand(command, value = null) {
+        const editor = document.getElementById('wysiwygEditor');
+        editor.focus();
+        try { document.execCommand('styleWithCSS', false, true); } catch (e) {}
         document.execCommand(command, false, value);
         this.syncEditors('wysiwyg');
       }
@@ -1509,6 +1530,7 @@
         document.getElementById('toggleSidebarBtn').onclick = () => this.toggleSidebar();
         document.getElementById('newNoteBtn').onclick = () => this.createNote();
         document.getElementById('newNoteBtn2').onclick = () => this.createNote();
+        document.getElementById('newFolderBtn').onclick = () => this.createFolder();
         document.getElementById('deleteNoteBtn').onclick = () => this.deleteNote(this.state.activeNoteId);
         document.getElementById('settingsBtn').onclick = () => this.showSettings();
         document.getElementById('themeToggleBtn').onclick = () => this.toggleTheme();
@@ -2154,6 +2176,70 @@
         };
         
         syncStatus.textContent = statusText[status] || status;
+      }
+
+      // .env loader and sync gating
+      async loadEnv() {
+        this.env = {};
+        try {
+          const res = await fetch('/.env', { cache: 'no-store' });
+          if (res.ok) {
+            const text = await res.text();
+            this.env = this.parseEnv(text);
+            // Apply env to settings
+            if (this.env.GITHUB_TOKEN) this.state.settings.githubToken = this.env.GITHUB_TOKEN;
+            if (this.env.GIST_ID) this.state.settings.gistId = this.env.GIST_ID;
+            if (this.env.GITHUB_TOKEN && this.env.GIST_ID) this.state.settings.syncEnabled = true;
+          }
+        } catch (e) {
+          // No env is fine; remain local-only until user configures
+        }
+      }
+
+      parseEnv(text) {
+        const env = {};
+        text.split('\n').forEach(line => {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed.startsWith('#')) return;
+          const idx = trimmed.indexOf('=');
+          if (idx === -1) return;
+          const key = trimmed.substring(0, idx).trim();
+          let value = trimmed.substring(idx + 1).trim();
+          if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith('\'') && value.endsWith('\''))) {
+            value = value.substring(1, value.length - 1);
+          }
+          env[key] = value;
+        });
+        return env;
+      }
+
+      async ensureInitialSync() {
+        // Ensure we have credentials from env or local storage
+        const hasCreds = !!(this.state.settings.githubToken && this.state.settings.gistId);
+        if (!this.state.settings.syncEnabled || !hasCreds) {
+          return false;
+        }
+        try {
+          // Try pull first; if gist missing, try push to create
+          const pulled = await this.syncFromGist();
+          if (pulled) return true;
+          const pushed = await this.syncToGist();
+          return !!pushed;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      // Create a folder-like note (simple grouping via title prefix)
+      createFolder() {
+        const name = prompt('Folder name:');
+        if (!name) return;
+        const note = this.createNote('📁 ' + name);
+        note.pinned = true;
+        this.state.notes.set(note.id, note);
+        this.saveNotes();
+        this.render();
+        this.loadNote(note.id);
       }
     }
 
