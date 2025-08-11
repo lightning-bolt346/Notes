@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Notes — Personal</title>
+  <meta name="description" content="Personal notes app — offline-first with optional cloud sync" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a84ff'/%3E%3Cpath d='M26 28h48v44a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V28z' fill='white'/%3E%3Cpath d='M34 20h32a8 8 0 0 1 8 8H26a8 8 0 0 1 8-8z' fill='white' opacity='.8'/%3E%3C/svg%3E"/>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #121821;
+      --panel-2: #192230;
+      --border: #253041;
+      --text: #e6eefc;
+      --muted: #9fb1cf;
+      --accent: #3b82f6;
+      --accent-2: #60a5fa;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --ok: #10b981;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    [data-theme="light"] {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --panel-2: #f1f5fb;
+      --border: #e3e8f0;
+      --text: #0b1220;
+      --muted: #515e77;
+      --accent: #2563eb;
+      --accent-2: #1d4ed8;
+      --danger: #dc2626;
+      --warn: #d97706;
+      --ok: #059669;
+      --shadow: 0 8px 24px rgba(2, 6, 23, .08);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, Ubuntu, Cantarell, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      grid-template-rows: 56px 1fr;
+      grid-template-areas:
+        "sidebar header"
+        "sidebar main";
+      height: 100vh;
+    }
+    header {
+      grid-area: header;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+      position: sticky; top: 0; z-index: 5;
+    }
+    .sidebar {
+      grid-area: sidebar;
+      border-right: 1px solid var(--border);
+      background: var(--panel);
+      display: flex; flex-direction: column;
+      min-width: 0;
+    }
+    .main {
+      grid-area: main;
+      display: grid; grid-template-rows: auto 1fr auto;
+      background: var(--panel-2);
+      min-width: 0; min-height: 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .3px; }
+    .brand .dot { width: 10px; height: 10px; background: var(--accent); border-radius: 999px; box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 40%, transparent); }
+    .toolbar { display: flex; gap: 6px; align-items: center; }
+
+    .btn, button { cursor: pointer; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); border-radius: 10px; padding: 8px 10px; font-weight: 600; transition: .15s ease; }
+    .btn:hover { border-color: color-mix(in oklab, var(--accent) 30%, var(--border)); box-shadow: var(--shadow); transform: translateY(-1px); }
+    .btn.ghost { background: transparent; }
+    .btn.primary { background: linear-gradient(180deg, var(--accent), var(--accent-2)); border-color: transparent; color: white; }
+    .btn.danger { background: linear-gradient(180deg, var(--danger), #b91c1c); color: white; border-color: transparent; }
+    .btn.warn { background: linear-gradient(180deg, var(--warn), #b45309); color: white; border-color: transparent; }
+    .btn.small { padding: 6px 8px; font-size: .9rem; border-radius: 8px; }
+    .btn.square { padding: 7px; width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
+
+    .search { padding: 8px 10px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); border-radius: 12px; outline: none; width: 100%; }
+    .row { display: flex; gap: 10px; align-items: center; }
+
+    .sidebar-top { padding: 10px; display: grid; gap: 10px; }
+    .sidebar-actions { display: flex; gap: 8px; }
+    .filter { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 10px 10px; }
+
+    .note-list { overflow: auto; padding: 6px; min-height: 0; }
+    .note-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 10px; border: 1px solid var(--border); background: var(--panel-2); border-radius: 12px; margin: 6px; cursor: pointer; transition: .12s ease; }
+    .note-item:hover { border-color: color-mix(in oklab, var(--accent) 30%, var(--border)); }
+    .note-item.active { outline: 2px solid color-mix(in oklab, var(--accent) 50%, transparent); }
+    .note-title { font-weight: 700; }
+    .note-meta { color: var(--muted); font-size: .85rem; display: flex; gap: 10px; align-items: center; }
+    .tag { font-size: .8rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); color: var(--muted); }
+    .pill { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); }
+
+    .editor-header { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); }
+    .title-input { font-size: 1.2rem; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); outline: none; width: 100%; }
+
+    .editor-toolbar { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 56px; z-index: 4; }
+    .editor { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: 0; }
+    .pane { min-height: 0; overflow: auto; }
+
+    .wysiwyg { padding: 18px 22px; line-height: 1.6; }
+    .wysiwyg[contenteditable="true"]:focus { outline: none; }
+    .wysiwyg h1, .wysiwyg h2, .wysiwyg h3 { margin: 1.2em 0 .4em; }
+    .wysiwyg ul, .wysiwyg ol { padding-left: 1.3em; }
+
+    .md-pane { border-left: 1px solid var(--border); background: var(--panel); display: grid; grid-template-rows: auto 1fr; }
+    .md-tabs { display: flex; gap: 8px; padding: 8px; border-bottom: 1px solid var(--border); }
+    .md-tabs .btn.active { background: var(--panel-2); border-color: var(--accent); }
+    .markdown-input { width: 100%; height: 100%; background: var(--panel-2); color: var(--text); border: none; outline: none; padding: 14px 16px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, "Courier New", monospace; font-size: .95rem; line-height: 1.6; }
+    .markdown-preview { padding: 18px 22px; }
+
+    .attachments { border-top: 1px solid var(--border); background: var(--panel); padding: 10px; display: grid; gap: 8px; }
+    .attachments .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .attachment { border: 1px solid var(--border); background: var(--panel-2); border-radius: 12px; overflow: hidden; display: grid; grid-template-rows: 120px auto; }
+    .attachment .thumb { display: grid; place-items: center; background: var(--panel); overflow: hidden; }
+    .attachment .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .attachment .meta { display: grid; gap: 6px; padding: 8px; font-size: .9rem; }
+
+    .statusbar { display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-top: 1px solid var(--border); background: var(--panel); color: var(--muted); }
+
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 50; }
+    .modal { width: min(720px, 92vw); background: var(--panel); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    .modal header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--panel); }
+    .modal .content { padding: 16px; display: grid; gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-weight: 700; color: var(--muted); }
+    .field input, .field textarea, .field select { padding: 10px 12px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); border-radius: 10px; }
+
+    .login {
+      position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(1200px 800px at 80% -20%, rgba(59,130,246,.25), transparent), radial-gradient(1000px 700px at -10% 120%, rgba(16,185,129,.18), transparent), var(--bg);
+    }
+    .login-card { width: min(420px, 92vw); padding: 26px; border-radius: 16px; background: var(--panel); border: 1px solid var(--border); box-shadow: var(--shadow); display: grid; gap: 14px; }
+    .login .hint { color: var(--muted); font-size: .95rem; }
+
+    .hidden { display: none !important; }
+    .flex { display: flex; }
+    .gap-6 { gap: 6px; }
+    .gap-8 { gap: 8px; }
+    .gap-10 { gap: 10px; }
+    .center { align-items: center; justify-content: center; }
+    .grow { flex: 1; }
+    .muted { color: var(--muted); }
+    .sep-v { width: 1px; height: 24px; background: var(--border); margin: 0 6px; }
+    .kbd { border: 1px solid var(--border); background: var(--panel-2); padding: 2px 6px; border-radius: 6px; font-size: .85rem; }
+
+    @media (max-width: 1100px) {
+      .editor { grid-template-columns: 1fr; }
+      .md-pane { border-left: none; border-top: 1px solid var(--border); }
+    }
+    @media (max-width: 900px) {
+      .app { grid-template-columns: 1fr; grid-template-areas: "header" "main"; }
+      .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="login" class="login">
+    <div class="login-card">
+      <div class="brand"><div class="dot"></div> <div>Personal Notes</div></div>
+      <div class="hint">Enter password to continue</div>
+      <input id="passwordInput" type="password" placeholder="Password" class="search" />
+      <div class="row" style="justify-content: space-between;">
+        <div class="muted">Press <span class="kbd">Enter</span></div>
+        <button id="enterBtn" class="btn primary">Enter</button>
+      </div>
+      <div id="loginError" class="muted" style="color: var(--danger);"></div>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden" data-theme="dark">
+    <header>
+      <div class="brand">
+        <div class="dot"></div>
+        <div>Personal Notes</div>
+        <div id="syncStatus" class="pill muted" style="margin-left: 10px;">offline</div>
+      </div>
+      <div class="toolbar">
+        <button id="newNoteBtn" class="btn small">New</button>
+        <button id="deleteNoteBtn" class="btn small danger">Delete</button>
+        <button id="pinBtn" class="btn small">Pin</button>
+        <span class="sep-v"></span>
+        <button id="exportBtn" class="btn small">Export</button>
+        <button id="importBtn" class="btn small">Import</button>
+        <span class="sep-v"></span>
+        <button id="syncNowBtn" class="btn small">Sync now</button>
+        <button id="settingsBtn" class="btn small">Settings</button>
+        <button id="themeBtn" class="btn small">Theme</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <input id="searchInput" class="search" placeholder="Search (title, content, tags)" />
+        <div class="sidebar-actions">
+          <button id="newNoteBtn2" class="btn small primary">New note</button>
+          <button id="newFolderBtn" class="btn small">New folder</button>
+        </div>
+      </div>
+      <div class="filter">
+        <span class="tag">All</span>
+        <span class="tag">Pinned</span>
+        <span class="tag">Today</span>
+        <span class="tag">With files</span>
+      </div>
+      <div id="noteList" class="note-list"></div>
+    </aside>
+
+    <section class="main">
+      <div class="editor-header">
+        <input id="titleInput" class="title-input" placeholder="Untitled" />
+        <div class="row">
+          <span id="modifiedLabel" class="muted">Saved</span>
+        </div>
+      </div>
+
+      <div class="editor-toolbar">
+        <button class="btn square" data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button class="btn square" data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button class="btn square" data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button class="btn square" data-cmd="strikeThrough" title="Strikethrough"><span style="text-decoration: line-through;">S</span></button>
+        <button class="btn square" data-cmd="insertUnorderedList" title="Bulleted list">• List</button>
+        <button class="btn square" data-cmd="insertOrderedList" title="Numbered list">1.</button>
+        <button class="btn square" data-cmd="formatBlock:H1" title="Heading 1">H1</button>
+        <button class="btn square" data-cmd="formatBlock:H2" title="Heading 2">H2</button>
+        <button class="btn square" data-cmd="formatBlock:H3" title="Heading 3">H3</button>
+        <button class="btn square" id="colorBtn" title="Text color">A</button>
+        <input type="color" id="colorInput" class="hidden" />
+        <button class="btn square" id="linkBtn" title="Insert link">🔗</button>
+        <button class="btn square" id="codeBtn" title="Inline code"></> </button>
+        <button class="btn square" id="blockquoteBtn" title="Quote">❝</button>
+        <button class="btn square" id="todoBtn" title="Todo list">☑</button>
+        <span class="sep-v"></span>
+        <button id="toggleSplitBtn" class="btn small">Toggle split</button>
+        <button id="focusModeBtn" class="btn small">Focus</button>
+      </div>
+
+      <div class="editor">
+        <div class="pane">
+          <div id="wysiwyg" class="wysiwyg" contenteditable="true"></div>
+        </div>
+        <div class="md-pane">
+          <div class="md-tabs">
+            <button id="tabWrite" class="btn small active">Markdown</button>
+            <button id="tabPreview" class="btn small">Preview</button>
+          </div>
+          <div id="mdWritePane" class="pane">
+            <textarea id="markdownInput" class="markdown-input" placeholder="Write in Markdown..."></textarea>
+          </div>
+          <div id="mdPreviewPane" class="pane hidden">
+            <div id="markdownPreview" class="markdown-preview"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="attachments">
+        <div class="row" style="justify-content: space-between;">
+          <div class="row gap-8">
+            <div class="muted">Attachments</div>
+            <div id="attachmentsInfo" class="muted"></div>
+          </div>
+          <div class="row gap-8">
+            <input id="fileInput" type="file" multiple class="hidden" accept="image/*,application/pdf,.doc,.docx,.txt,.md" />
+            <button id="addFileBtn" class="btn small">Add files</button>
+            <button id="clearFilesBtn" class="btn small warn">Clear all</button>
+          </div>
+        </div>
+        <div id="attachmentGrid" class="grid"></div>
+      </div>
+
+      <div class="statusbar">
+        <div class="row gap-8">
+          <span id="noteCount" class="muted">0 notes</span>
+          <span class="sep-v"></span>
+          <span id="wordCount" class="muted">0 words</span>
+          <span class="sep-v"></span>
+          <span id="cursorLoc" class="muted">Ln 1, Col 1</span>
+        </div>
+        <div class="row gap-8">
+          <span id="tagsLabel" class="muted"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="settingsModal" class="modal-backdrop">
+    <div class="modal">
+      <header>
+        <div class="row" style="justify-content: space-between; width: 100%;">
+          <div class="row gap-8 center">
+            <div class="brand"><div class="dot"></div> <div>Settings</div></div>
+          </div>
+          <button id="closeSettingsBtn" class="btn small">Close</button>
+        </div>
+      </header>
+      <div class="content">
+        <div class="field">
+          <label>Theme</label>
+          <div class="row gap-8">
+            <button data-theme="dark" class="btn small">Dark</button>
+            <button data-theme="light" class="btn small">Light</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Cloud Sync (GitHub Gist)</label>
+          <div class="row gap-8">
+            <label class="row gap-6 center"><input type="checkbox" id="enableSync" /> Enable sync</label>
+          </div>
+          <div class="row gap-8">
+            <input id="githubToken" placeholder="GitHub Personal Access Token (repo,gist)" class="grow" />
+            <input id="gistId" placeholder="Gist ID (leave blank to create)" class="grow" />
+          </div>
+          <div class="row gap-8">
+            <input id="syncRoom" placeholder="Sync room (for P2P Yjs optional)" class="grow" />
+            <button id="testSyncBtn" class="btn small">Test</button>
+          </div>
+          <div class="muted">
+            Uses optional GitHub Gist to back up and sync notes across devices. Your token stays in your browser.
+          </div>
+        </div>
+        <div class="field">
+          <label>Export / Import</label>
+          <div class="row gap-8">
+            <button id="exportZipBtn" class="btn small">Export .zip</button>
+            <input id="importZipInput" type="file" accept="application/zip" class="hidden" />
+            <button id="importZipBtn" class="btn small">Import .zip</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="row gap-8">
+            <input id="changePasswordInput" placeholder="New password" />
+            <button id="changePasswordBtn" class="btn small">Change</button>
+          </div>
+          <div class="muted">Password is stored locally (hashed). This is not a substitute for encryption.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.3/dist/turndown.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <script>
+  ;(() => {
+    const PASSWORD_DEFAULT = "notes@123"; // Change if needed
+
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    const state = {
+      notes: new Map(),
+      order: [],
+      activeId: null,
+      attachments: new Map(),
+      modified: false,
+      theme: localStorage.getItem('theme') || 'dark',
+      search: '',
+      sync: {
+        enabled: JSON.parse(localStorage.getItem('sync.enabled') || 'false'),
+        token: localStorage.getItem('sync.token') || '',
+        gistId: localStorage.getItem('sync.gistId') || '',
+        last: null,
+      },
+      passwordHash: localStorage.getItem('password.hash') || null,
+    };
+
+    const turndown = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced' });
+    marked.setOptions({ breaks: true, gfm: true });
+
+    function uid(prefix='n') { return prefix + '_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+    function nowIso() { return new Date().toISOString(); }
+    function fmtDate(iso) { const d = new Date(iso); return d.toLocaleString(); }
+
+    function sha256(text) { return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(buf => Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')); }
+
+    function saveLocal() {
+      const snapshot = {
+        notes: Array.from(state.notes.values()),
+        order: state.order,
+        attachments: Array.from(state.attachments.entries()),
+        version: 2,
+        updatedAt: nowIso(),
+      };
+      localStorage.setItem('notes.data', JSON.stringify(snapshot));
+      updateModified(false);
+      updateCounts();
+    }
+
+    function loadLocal() {
+      const raw = localStorage.getItem('notes.data');
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        state.notes = new Map((data.notes || []).map(n => [n.id, n]));
+        state.order = data.order || Array.from(state.notes.keys());
+        state.attachments = new Map(data.attachments || []);
+      } catch (e) { console.error('Load failed', e); }
+    }
+
+    function setTheme(theme) {
+      state.theme = theme; localStorage.setItem('theme', theme);
+      $('#app').setAttribute('data-theme', theme);
+    }
+
+    function renderList() {
+      const list = $('#noteList');
+      list.innerHTML = '';
+      const q = state.search.trim().toLowerCase();
+      const items = state.order
+        .map(id => state.notes.get(id))
+        .filter(Boolean)
+        .filter(n => {
+          if (!q) return true;
+          const hay = (n.title + ' ' + n.markdown + ' ' + (n.tags||[]).join(' ')).toLowerCase();
+          return hay.includes(q);
+        })
+        .sort((a,b) => (b.pinned?1:0) - (a.pinned?1:0) || new Date(b.updatedAt) - new Date(a.updatedAt));
+
+      for (const n of items) {
+        const el = document.createElement('div');
+        el.className = 'note-item' + (state.activeId === n.id ? ' active' : '');
+        el.dataset.id = n.id;
+        el.innerHTML = `
+          <div>
+            <div class="note-title">${escapeHtml(n.title || 'Untitled')}</div>
+            <div class="note-meta">
+              <span>${fmtDate(n.updatedAt)}</span>
+              ${n.pinned ? '<span class="pill">📌 Pinned</span>' : ''}
+              ${(n.tags||[]).slice(0,3).map(t=>`<span class="tag">#${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>
+          <div class="muted">${(state.attachments.get(n.id)||[]).length} files</div>
+        `;
+        el.addEventListener('click', () => { openNote(n.id); });
+        list.appendChild(el);
+      }
+      $('#noteCount').textContent = `${items.length} notes`;
+    }
+
+    function openNote(id) {
+      const n = state.notes.get(id);
+      if (!n) return;
+      state.activeId = id;
+      $('#titleInput').value = n.title || '';
+      $('#markdownInput').value = n.markdown || '';
+      $('#markdownPreview').innerHTML = marked.parse(n.markdown || '');
+      $('#wysiwyg').innerHTML = n.html || marked.parse(n.markdown || '');
+      updateWordCount();
+      renderAttachments();
+      renderList();
+      updateTagsLabel(n);
+      updateModified(false);
+    }
+
+    function newNote() {
+      const id = uid();
+      const n = { id, title: 'Untitled', markdown: '', html: '', createdAt: nowIso(), updatedAt: nowIso(), pinned: false, tags: [], versions: [] };
+      state.notes.set(id, n);
+      state.order.unshift(id);
+      state.attachments.set(id, []);
+      saveLocal();
+      renderList();
+      openNote(id);
+    }
+
+    function deleteNote() {
+      const id = state.activeId; if (!id) return;
+      if (!confirm('Move note to trash? (Permanent delete in this demo)')) return;
+      state.notes.delete(id);
+      state.order = state.order.filter(x => x !== id);
+      state.attachments.delete(id);
+      state.activeId = null;
+      saveLocal();
+      renderList();
+      if (state.order[0]) openNote(state.order[0]); else clearEditor();
+    }
+
+    function clearEditor() {
+      $('#titleInput').value = '';
+      $('#markdownInput').value = '';
+      $('#markdownPreview').innerHTML = '';
+      $('#wysiwyg').innerHTML = '';
+      $('#attachmentGrid').innerHTML = '';
+      $('#attachmentsInfo').textContent = '';
+      updateWordCount();
+      updateTagsLabel(null);
+    }
+
+    function updateModified(mod) {
+      state.modified = mod;
+      $('#modifiedLabel').textContent = mod ? 'Unsaved…' : 'Saved';
+    }
+
+    function persistActiveNote({ snapshotVersion=false }={}) {
+      const id = state.activeId; if (!id) return;
+      const n = state.notes.get(id);
+      const title = $('#titleInput').value.trim() || 'Untitled';
+      const markdown = $('#markdownInput').value;
+      const html = $('#wysiwyg').innerHTML;
+      const tags = Array.from(new Set((markdown.match(/(^|\s)#([a-zA-Z0-9_-]+)/g) || []).map(s => s.replace(/^\s?#/, '').trim())));
+      const prev = { ...n };
+      n.title = title; n.markdown = markdown; n.html = html; n.tags = tags; n.updatedAt = nowIso();
+      if (snapshotVersion) {
+        n.versions = n.versions || [];
+        n.versions.unshift({ at: nowIso(), title: prev.title, markdown: prev.markdown });
+        n.versions = n.versions.slice(0, 10);
+      }
+      state.notes.set(id, n);
+      updateTagsLabel(n);
+      saveLocal();
+    }
+
+    function updateCounts() {
+      const id = state.activeId; if (!id) return;
+      const files = state.attachments.get(id) || [];
+      const total = files.reduce((a,f)=>a+(f.size||0),0);
+      $('#attachmentsInfo').textContent = `${files.length} files • ${(total/1024).toFixed(2)} MB`;
+    }
+
+    function updateWordCount() {
+      const text = ($('#markdownInput').value || '').replace(/[#>*`_\-\[\]]/g,' ');
+      const words = text.trim().split(/\s+/).filter(Boolean).length;
+      $('#wordCount').textContent = `${words} words`;
+    }
+
+    function updateTagsLabel(n) {
+      const tags = n?.tags || [];
+      $('#tagsLabel').textContent = tags.length ? '#' + tags.join('  #') : '';
+    }
+
+    function renderAttachments() {
+      const id = state.activeId; if (!id) return;
+      const grid = $('#attachmentGrid'); grid.innerHTML = '';
+      const files = state.attachments.get(id) || [];
+      for (let i=0;i<files.length;i++) {
+        const f = files[i];
+        const el = document.createElement('div');
+        el.className = 'attachment';
+        const isImg = f.type.startsWith('image/');
+        el.innerHTML = `
+          <div class="thumb">${isImg ? `<img alt="${escapeHtml(f.name)}" src="${f.dataUrl}" />` : `<div class='muted'>${escapeHtml(f.type || 'file')}</div>`}</div>
+          <div class="meta">
+            <div>${escapeHtml(f.name)}</div>
+            <div class="row" style="justify-content: space-between;">
+              <span class="muted">${(f.size).toFixed(1)} KB</span>
+              <div class="row gap-6">
+                <button class="btn small" data-action="download" data-idx="${i}">Download</button>
+                <button class="btn small danger" data-action="remove" data-idx="${i}">Remove</button>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(el);
+      }
+      updateCounts();
+    }
+
+    function escapeHtml(s='') { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+    async function fileToDataUrl(file) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(fr.result);
+        fr.onerror = rej; fr.readAsDataURL(file);
+      });
+    }
+
+    async function addFilesFromInput(files) {
+      const id = state.activeId; if (!id) return;
+      const arr = state.attachments.get(id) || [];
+      for (const file of files) {
+        const dataUrl = await fileToDataUrl(file);
+        arr.push({ name: file.name, type: file.type, size: file.size/1024, dataUrl, addedAt: nowIso() });
+      }
+      state.attachments.set(id, arr);
+      saveLocal();
+      renderAttachments();
+    }
+
+    function togglePin() {
+      const id = state.activeId; if (!id) return;
+      const n = state.notes.get(id); n.pinned = !n.pinned; n.updatedAt = nowIso();
+      state.notes.set(id, n); saveLocal(); renderList();
+    }
+
+    // Toolbar actions
+    function exec(cmd, value=null) {
+      if (cmd.startsWith('formatBlock:')) {
+        document.execCommand('formatBlock', false, cmd.split(':')[1]);
+      } else {
+        document.execCommand(cmd, false, value);
+      }
+      syncEditorsFromHtml();
+    }
+    function syncEditorsFromHtml() {
+      const html = $('#wysiwyg').innerHTML;
+      const md = turndown.turndown(html);
+      $('#markdownInput').value = md;
+      $('#markdownPreview').innerHTML = marked.parse(md);
+      persistActiveNote(); updateModified(true); updateWordCount();
+    }
+    function syncEditorsFromMarkdown() {
+      const md = $('#markdownInput').value;
+      $('#markdownPreview').innerHTML = marked.parse(md);
+      // Convert markdown to HTML via marked for WYSIWYG mirror
+      $('#wysiwyg').innerHTML = marked.parse(md);
+      persistActiveNote(); updateModified(true); updateWordCount();
+    }
+
+    // Export/Import
+    async function exportZip() {
+      const zip = new JSZip();
+      const meta = { exportedAt: nowIso(), noteCount: state.notes.size };
+      zip.file('meta.json', JSON.stringify(meta, null, 2));
+      const notesDir = zip.folder('notes');
+      for (const id of state.order) {
+        const n = state.notes.get(id); if (!n) continue;
+        notesDir.file(`${sanitizeFilename(n.title || id)}.md`, n.markdown || '');
+      }
+      const attachDir = zip.folder('attachments');
+      for (const [noteId, files] of state.attachments.entries()) {
+        const dir = attachDir.folder(noteId);
+        for (const f of files) {
+          const base64 = (f.dataUrl.split(',')[1])||'';
+          dir.file(f.name, base64, { base64: true });
+        }
+      }
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = `notes-export-${Date.now()}.zip`; a.click();
+    }
+    function sanitizeFilename(name) { return name.replace(/[^a-zA-Z0-9-_\. ]/g, '_').slice(0, 80); }
+    async function importZip(file) {
+      const zip = await JSZip.loadAsync(file);
+      // Import notes
+      const notes = [];
+      for (const path in zip.files) {
+        if (path.startsWith('notes/') && path.endsWith('.md')) {
+          const content = await zip.files[path].async('string');
+          const title = path.split('/').pop().replace(/\.md$/, '');
+          const id = uid();
+          const n = { id, title, markdown: content, html: marked.parse(content), createdAt: nowIso(), updatedAt: nowIso(), pinned: false, tags: [], versions: [] };
+          state.notes.set(id, n); state.order.unshift(id);
+          state.attachments.set(id, []);
+          notes.push(n);
+        }
+      }
+      // Import attachments
+      for (const path in zip.files) {
+        if (path.startsWith('attachments/')) {
+          const parts = path.split('/');
+          if (parts.length >= 3) {
+            const noteId = parts[1];
+            const name = parts.slice(2).join('/');
+            const fileData = await zip.files[path].async('base64');
+            const dataUrl = `data:${guessMimeType(name)};base64,${fileData}`;
+            const arr = state.attachments.get(noteId) || [];
+            arr.push({ name, type: guessMimeType(name), size: fileData.length * 0.75 / 1024, dataUrl, addedAt: nowIso() });
+            state.attachments.set(noteId, arr);
+          }
+        }
+      }
+      saveLocal(); renderList(); if (notes[0]) openNote(notes[0].id);
+    }
+    function guessMimeType(name='') {
+      const ext = name.split('.').pop().toLowerCase();
+      const map = { png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif', webp:'image/webp', pdf:'application/pdf', txt:'text/plain', md:'text/markdown', doc:'application/msword', docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document' };
+      return map[ext] || 'application/octet-stream';
+    }
+
+    // Cloud sync via GitHub Gist (optional)
+    async function syncNow({ silent=false }={}) {
+      if (!state.sync.enabled) { setSyncStatus('offline'); return; }
+      const token = state.sync.token?.trim();
+      if (!token) { setSyncStatus('token missing'); return; }
+      try {
+        setSyncStatus('syncing…');
+        const payload = buildSyncPayload();
+        let gistId = state.sync.gistId?.trim();
+        let res;
+        if (!gistId) {
+          res = await fetch('https://api.github.com/gists', {
+            method: 'POST',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ description: 'Personal Notes Sync', public: false, files: { 'notes.json': { content: JSON.stringify(payload) } } })
+          });
+          const data = await res.json();
+          if (res.ok && data.id) { gistId = data.id; state.sync.gistId = gistId; localStorage.setItem('sync.gistId', gistId); }
+          else throw new Error('Create gist failed: ' + (data.message || res.status));
+        } else {
+          res = await fetch(`https://api.github.com/gists/${gistId}`, {
+            method: 'PATCH',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ files: { 'notes.json': { content: JSON.stringify(payload) } } })
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(()=>({}));
+            throw new Error('Update gist failed: ' + (data.message || res.status));
+          }
+        }
+        setSyncStatus('synced'); state.sync.last = nowIso(); if (!silent) toast('Synced');
+      } catch (e) {
+        console.error(e); setSyncStatus('error'); if (!silent) toast('Sync error');
+      }
+    }
+
+    function buildSyncPayload() {
+      const notes = Array.from(state.notes.values());
+      const attachments = {};
+      for (const [id, files] of state.attachments.entries()) {
+        attachments[id] = files.map(f => ({ name: f.name, type: f.type, size: f.size, dataUrl: f.dataUrl, addedAt: f.addedAt }));
+      }
+      return { version: 2, updatedAt: nowIso(), notes, order: state.order, attachments };
+    }
+
+    async function pullSync() {
+      if (!state.sync.enabled || !state.sync.gistId || !state.sync.token) return;
+      try {
+        setSyncStatus('pulling…');
+        const res = await fetch(`https://api.github.com/gists/${state.sync.gistId}`, { headers: { 'Authorization': `token ${state.sync.token}` }});
+        const data = await res.json();
+        const file = data.files?.['notes.json'];
+        if (file && file.content) {
+          const payload = JSON.parse(file.content);
+          // Simple merge strategy: prefer latest updatedAt per note id
+          const incoming = new Map((payload.notes||[]).map(n => [n.id, n]));
+          for (const [id, note] of incoming.entries()) {
+            const local = state.notes.get(id);
+            if (!local || new Date(note.updatedAt) > new Date(local.updatedAt)) {
+              state.notes.set(id, note);
+            }
+          }
+          const inOrder = payload.order || [];
+          const mergedIds = Array.from(new Set([...inOrder, ...state.order]));
+          state.order = mergedIds.filter(id => state.notes.has(id));
+
+          const att = payload.attachments || {};
+          for (const id in att) { state.attachments.set(id, att[id]); }
+
+          saveLocal(); renderList(); if (state.activeId) openNote(state.activeId); else if (state.order[0]) openNote(state.order[0]);
+          setSyncStatus('synced');
+        } else {
+          setSyncStatus('no remote');
+        }
+      } catch (e) { console.error(e); setSyncStatus('error'); }
+    }
+
+    function setSyncStatus(text) { $('#syncStatus').textContent = text; }
+
+    function toast(msg) {
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.cssText = 'position:fixed;left:50%;top:20px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);padding:8px 12px;border-radius:10px;z-index:200;box-shadow:var(--shadow)';
+      document.body.appendChild(el); setTimeout(()=>{ el.remove(); }, 1600);
+    }
+
+    // Password gate
+    async function initPasswordGate() {
+      const storedHash = state.passwordHash;
+      if (!storedHash) {
+        const hash = await sha256(PASSWORD_DEFAULT);
+        state.passwordHash = hash; localStorage.setItem('password.hash', hash);
+      }
+      $('#passwordInput').addEventListener('keydown', async (e) => { if (e.key === 'Enter') enterApp(); });
+      $('#enterBtn').addEventListener('click', enterApp);
+    }
+
+    async function enterApp() {
+      const input = $('#passwordInput').value;
+      const hash = await sha256(input);
+      if (hash === state.passwordHash) {
+        $('#login').classList.add('hidden');
+        $('#app').classList.remove('hidden');
+        afterLogin();
+      } else { $('#loginError').textContent = 'Incorrect password'; }
+    }
+
+    async function changePassword(newPw) {
+      if (!newPw) return;
+      const hash = await sha256(newPw);
+      state.passwordHash = hash; localStorage.setItem('password.hash', hash);
+      toast('Password updated');
+    }
+
+    function afterLogin() {
+      setTheme(state.theme);
+      loadLocal();
+      renderList();
+      if (state.order[0]) openNote(state.order[0]);
+      setupHandlers();
+      initializeServiceWorker();
+      // Initial sync pull if enabled
+      if (state.sync.enabled) pullSync();
+      setInterval(() => { if (state.sync.enabled) syncNow({ silent: true }); }, 60000);
+    }
+
+    function setupHandlers() {
+      $('#newNoteBtn').addEventListener('click', newNote);
+      $('#newNoteBtn2').addEventListener('click', newNote);
+      $('#deleteNoteBtn').addEventListener('click', deleteNote);
+      $('#pinBtn').addEventListener('click', togglePin);
+      $('#titleInput').addEventListener('input', () => { persistActiveNote(); updateModified(true); renderList(); });
+      $('#markdownInput').addEventListener('input', () => { syncEditorsFromMarkdown(); });
+      $('#wysiwyg').addEventListener('input', () => { syncEditorsFromHtml(); });
+
+      // Toolbar buttons
+      $$('.editor-toolbar .btn[data-cmd]').forEach(b => b.addEventListener('click', () => {
+        const cmd = b.getAttribute('data-cmd');
+        if (cmd.startsWith('formatBlock')) { exec(cmd); } else { exec(cmd); }
+      }));
+      $('#colorBtn').addEventListener('click', ()=> $('#colorInput').click());
+      $('#colorInput').addEventListener('input', (e)=> exec('foreColor', e.target.value));
+      $('#linkBtn').addEventListener('click', ()=>{
+        const url = prompt('URL'); if (url) exec('createLink', url);
+      });
+      $('#codeBtn').addEventListener('click', ()=> document.execCommand('insertHTML', false, '<code>'+document.getSelection()+'</code>'));
+      $('#blockquoteBtn').addEventListener('click', ()=> exec('formatBlock:H3'));
+      $('#todoBtn').addEventListener('click', ()=> document.execCommand('insertHTML', false, '<ul class="todo"><li>[ ] </li></ul>'));
+
+      $('#toggleSplitBtn').addEventListener('click', () => {
+        document.querySelector('.md-pane').classList.toggle('hidden');
+      });
+      $('#focusModeBtn').addEventListener('click', () => {
+        document.querySelector('.sidebar').classList.toggle('hidden');
+      });
+
+      $('#tabWrite').addEventListener('click', () => { $('#tabWrite').classList.add('active'); $('#tabPreview').classList.remove('active'); $('#mdWritePane').classList.remove('hidden'); $('#mdPreviewPane').classList.add('hidden'); });
+      $('#tabPreview').addEventListener('click', () => { $('#tabWrite').classList.remove('active'); $('#tabPreview').classList.add('active'); $('#mdWritePane').classList.add('hidden'); $('#mdPreviewPane').classList.remove('hidden'); });
+
+      $('#searchInput').addEventListener('input', (e) => { state.search = e.target.value; renderList(); });
+
+      $('#addFileBtn').addEventListener('click', ()=> $('#fileInput').click());
+      $('#fileInput').addEventListener('change', async (e) => { await addFilesFromInput(e.target.files); e.target.value = ''; });
+      $('#clearFilesBtn').addEventListener('click', () => { const id = state.activeId; if (!id) return; if (confirm('Remove all attachments?')) { state.attachments.set(id, []); saveLocal(); renderAttachments(); } });
+      $('#attachmentGrid').addEventListener('click', (e) => {
+        const btn = e.target.closest('button'); if (!btn) return;
+        const idx = Number(btn.getAttribute('data-idx'));
+        const id = state.activeId; if (!id) return;
+        const files = state.attachments.get(id) || [];
+        if (btn.getAttribute('data-action') === 'remove') { files.splice(idx,1); state.attachments.set(id, files); saveLocal(); renderAttachments(); }
+        if (btn.getAttribute('data-action') === 'download') {
+          const f = files[idx]; const a = document.createElement('a'); a.href = f.dataUrl; a.download = f.name; a.click();
+        }
+      });
+
+      $('#exportBtn').addEventListener('click', exportZip);
+      $('#importBtn').addEventListener('click', ()=> $('#importZipInput').click());
+      $('#exportZipBtn').addEventListener('click', exportZip);
+      $('#importZipBtn').addEventListener('click', ()=> $('#importZipInput').click());
+      $('#importZipInput').addEventListener('change', async (e) => { const f = e.target.files[0]; if (f) await importZip(f); e.target.value=''; });
+
+      $('#settingsBtn').addEventListener('click', () => { openSettings(); });
+      $('#closeSettingsBtn').addEventListener('click', () => { closeSettings(); });
+
+      $('#themeBtn').addEventListener('click', () => { setTheme(state.theme === 'dark' ? 'light' : 'dark'); });
+
+      $('#enableSync').checked = state.sync.enabled;
+      $('#githubToken').value = state.sync.token;
+      $('#gistId').value = state.sync.gistId;
+
+      $('#enableSync').addEventListener('change', (e) => { state.sync.enabled = e.target.checked; localStorage.setItem('sync.enabled', JSON.stringify(state.sync.enabled)); setSyncStatus(state.sync.enabled ? 'ready' : 'offline'); });
+      $('#githubToken').addEventListener('input', (e) => { state.sync.token = e.target.value; localStorage.setItem('sync.token', state.sync.token); });
+      $('#gistId').addEventListener('input', (e) => { state.sync.gistId = e.target.value; localStorage.setItem('sync.gistId', state.sync.gistId); });
+      $('#testSyncBtn').addEventListener('click', () => { syncNow(); });
+      $('#syncNowBtn').addEventListener('click', () => { syncNow(); });
+
+      $('#changePasswordBtn').addEventListener('click', async () => { const pw = $('#changePasswordInput').value; await changePassword(pw); $('#changePasswordInput').value=''; });
+
+      // Hotkeys
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); persistActiveNote({ snapshotVersion:true }); toast('Saved'); }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); exec('bold'); }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') { e.preventDefault(); exec('italic'); }
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'u') { e.preventDefault(); exec('underline'); }
+      });
+
+      // Cursor location for markdown
+      $('#markdownInput').addEventListener('keyup', updateCursorLoc);
+      $('#markdownInput').addEventListener('click', updateCursorLoc);
+      function updateCursorLoc() {
+        const ta = $('#markdownInput'); const start = ta.selectionStart;
+        const text = ta.value.slice(0, start);
+        const lines = text.split(/\n/); const line = lines.length; const col = lines[lines.length-1].length + 1;
+        $('#cursorLoc').textContent = `Ln ${line}, Col ${col}`;
+      }
+    }
+
+    function openSettings() { $('#settingsModal').style.display = 'flex'; }
+    function closeSettings() { $('#settingsModal').style.display = 'none'; }
+
+    // Offline capability with a generated service worker
+    function initializeServiceWorker() {
+      if (!('serviceWorker' in navigator)) return;
+      const swCode = `
+        const CACHE = 'notes-cache-v1';
+        const ASSETS = self.__ASSETS__;
+        self.addEventListener('install', (e) => {
+          e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(()=> self.skipWaiting()));
+        });
+        self.addEventListener('activate', (e) => { e.waitUntil(self.clients.claim()); });
+        self.addEventListener('fetch', (e) => {
+          const url = new URL(e.request.url);
+          if (url.origin === location.origin) {
+            e.respondWith(caches.match(e.request).then(res => res || fetch(e.request).then(r => { const cc = r.clone(); caches.open(CACHE).then(c=>c.put(e.request, cc)); return r; }))); 
+          }
+        });
+      `;
+      const assets = [ location.href, 'https://cdn.jsdelivr.net/npm/marked/marked.min.js', 'https://cdn.jsdelivr.net/npm/turndown@7.1.3/dist/turndown.min.js', 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js' ];
+      const blob = new Blob([ 'self.__ASSETS__ = ' + JSON.stringify(assets) + ';\n' + swCode ], { type: 'text/javascript' });
+      const url = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url);
+    }
+
+    // Init
+    initPasswordGate();
+
+  })();
+  </script>
+</body>
+</html>
